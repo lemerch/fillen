@@ -7,7 +7,7 @@ public class ExamplePojo {
     private String text;
     private Integer number;
 
-    private List<String> list;
+    private List<Other> list;
 
     public String getText() {
         return text;
@@ -25,11 +25,11 @@ public class ExamplePojo {
         this.number = number;
     }
 
-    public List<String> getList() {
+    public List<Other> getList() {
         return list;
     }
 
-    public void setList(List<String> list) {
+    public void setList(List<Other> list) {
         this.list = list;
     }
 }

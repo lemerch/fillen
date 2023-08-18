@@ -1,31 +1,31 @@
 package com.github.shakal76.fillen;
 
 import com.github.shakal76.fillen.exception.BadLootException;
-import com.github.shakal76.fillen.bags.UserTypeContainer;
-import java.lang.reflect.Field;
+
+import java.lang.reflect.Type;
 import java.util.*;
 
 public class Fillen {
-    private List<UserType> configuration = new ArrayList<>();
+    private Bag bag = new Bag();
 
     // CONFIGURE
-    public Fillen(UserTypeContainer configure) {
-        this.configuration = configure.get();
+    public Fillen(Bag bag) {
+        this.bag = bag;
     }
-    public Fillen(UserType... userTypes) {
-        for (UserType userType : userTypes) {
-            configuration.add(userType);
+    public Fillen(Fillen.Diet... diets) {
+        for (Diet diet : diets) {
+            this.bag.put(diet);
         }
     }
 
 
     // INTERMEDIATE HANDLERS
     public Flight ignoreFields(String... fieldNames) {
-        Flight flight = new Flight(configuration);
+        Flight flight = new Flight(bag);
         return flight.ignoreFields(fieldNames);
     }
     public<T> Flight setField(String fieldName, T value) {
-        Flight flight = new Flight(configuration);
+        Flight flight = new Flight(bag);
         return flight.setField(fieldName, value);
     }
 
@@ -33,26 +33,32 @@ public class Fillen {
 
 
     public<T> T dinner(Class<T> type) throws BadLootException {
-        return Heart.dinner(type, new ArrayList<>(), new HashMap<>(), configuration);
-    }
-
-    // UTILS TODO: Отделить от API
-
-    public abstract static class UserType {
-        public static Boolean isType(Field one, Class<?> two) {
-            return one.getType().isAssignableFrom(two);
+        for (Fillen.Diet diet : bag.get()) {
+            diet.bag = this.bag;
+            diet.ignoringlist = new ArrayList<>();
+            diet.settinglist = new HashMap<>();
         }
-        public static Boolean isType(Class<?> one, Field two) {
-            return one.isAssignableFrom(two.getType());
+        return Heart.dinner(type, new ArrayList<>(), new HashMap<>(), bag);
+    }
+
+    // UTILS
+
+    public abstract static class Diet {
+        List<String> ignoringlist = null;
+        Map<String, Object> settinglist = null;
+        Bag bag = null;
+
+        public<T> T heart(Class<T> type) throws BadLootException {
+            if (ignoringlist == null || settinglist == null || bag == null) {
+                throw new BadLootException("hava not context");
+            }
+            return Heart.dinner(type, ignoringlist, settinglist, bag);
         }
-        public abstract Object handler(Field field);
+        public Boolean isTypesEquals(Class<?> one, Class<?> two) throws BadLootException {
+            return one.isAssignableFrom(two);
+        }
+        public abstract Object menu(Class<?> type, Type[] generics) throws BadLootException;
+
     }
 
-
-    private String fieldToGetter(String fieldName) {
-        return "get" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
-    }
-    private String fieldToSetter(String fieldName) {
-        return "get" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
-    }
 }
