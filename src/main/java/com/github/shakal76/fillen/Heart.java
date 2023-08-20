@@ -1,11 +1,10 @@
 package com.github.shakal76.fillen;
 
 import com.github.shakal76.fillen.exception.BadLootException;
+import com.github.shakal76.fillen.utils.Generic;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.*;
 
 class Heart {
@@ -34,11 +33,14 @@ class Heart {
                 try {
                     Object result = null;
 
+                    Ingredients ingredients = new Ingredients(
+                            field.getType(), field.getName(),
+                            new Generic(field.getGenericType()),
+                            field.getDeclaredAnnotations(),
+                            field.getModifiers()
+                    );
                     for (Fillen.Diet diet : bag.get()) {
-                        result = diet.menu(field.getType(),
-                                field.getName(),
-                                new Generic(field.getGenericType()),
-                                field.getDeclaredAnnotations());
+                        result = diet.menu(ingredients);
                         if (result != null) {
                             wasExist = true;
                             field.set(invoked, result);

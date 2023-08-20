@@ -1,7 +1,6 @@
-package com.github.shakal76.fillen;
+package com.github.shakal76.fillen.utils;
 
 import java.lang.reflect.Type;
-import java.util.Arrays;
 
 public class Generic {
     private String[] arr;

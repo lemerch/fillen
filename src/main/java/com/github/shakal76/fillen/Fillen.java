@@ -1,10 +1,9 @@
 package com.github.shakal76.fillen;
 
 import com.github.shakal76.fillen.exception.BadLootException;
+import com.github.shakal76.fillen.utils.Generic;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.Type;
 import java.util.*;
 
 public class Fillen {
@@ -44,20 +43,21 @@ public class Fillen {
     }
 
     // UTILS
+    // TODO: add priority field
 
     public abstract static class Diet {
         List<String> ignoringlist = null;
         Map<String, Object> settinglist = null;
         public Bag bag = null;
 
-        public Object heart(Class<?> type, String name, Generic generic, Annotation[] annotations) throws BadLootException {
+        public Object heart(Ingredients ingredients) throws BadLootException {
             if (ignoringlist == null || settinglist == null || bag == null) {
                 throw new BadLootException("hava not context");
             }
             Object result = null;
             boolean was = false;
             for (Fillen.Diet diet : bag.get()) {
-                Object timed = diet.menu(type, type.getName(), generic, type.getDeclaredAnnotations());
+                Object timed = diet.menu(ingredients);
                 if (timed != null) {
                     result = timed;
                     was = true;
@@ -67,14 +67,30 @@ public class Fillen {
                 return result;
             }else {
                 try {
-                    return Heart.dinner(Class.forName(type.getTypeName()), ignoringlist, settinglist, bag);
+                    return Heart.dinner(
+                            Class.forName(ingredients.type.getTypeName()), ignoringlist, settinglist, bag
+                    );
                 } catch (Exception e) { return null;}
             }
         }
         public Boolean isTypesEquals(Class<?> one, Class<?> two) throws BadLootException {
             return two.isAssignableFrom(one);
         }
-        public abstract Object menu(Class<?> type, String name, Generic generic, Annotation[] annotations) throws BadLootException;
+        public List<Class<?>> getListArray(Class<?> arr) {
+            List<Class<?>> array = new ArrayList<>();
+            if (arr.isArray()) {
+                Class<?> currentType = arr;
+                while (currentType.isArray()) {
+                    array.add(currentType);
+                    currentType = currentType.getComponentType();
+                }
+                array.add(currentType);
+                return array;
+            }else {
+                return null;
+            }
+        }
+        public abstract Object menu(Ingredients ingredients) throws BadLootException;
 
     }
 

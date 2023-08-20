@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -18,7 +19,7 @@ public class ExampleTest {
         Fillen fillen = new Fillen();
 
         ExamplePojo dinner = fillen.dinner(ExamplePojo.class);
-        System.out.println(dinner.getText());
+        System.out.println(Arrays.deepToString(dinner.getText()));
         System.out.println(dinner.getNumber());
         System.out.println(dinner.getList().get(0).get(0).getC());
     }
