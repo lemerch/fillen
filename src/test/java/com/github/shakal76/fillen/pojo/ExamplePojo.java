@@ -4,16 +4,16 @@ import java.util.List;
 
 public class ExamplePojo {
 
-    private String text;
+    private String text[][][][];
     private Integer number;
 
     private List<String> list;
 
-    public String getText() {
+    public String[][][][] getText() {
         return text;
     }
 
-    public void setText(String text) {
+    public void setText(String[][][][] text) {
         this.text = text;
     }
 

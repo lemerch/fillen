@@ -10,10 +10,10 @@ import java.util.Map;
 class Flight {
     private List<Object> ignoringlist = new ArrayList<>();
     private Map<String, Object> settinglist = new HashMap<>();
-    private List<Fillen.UserType> configuration;
+    private Bag bag;
 
-    Flight(List<Fillen.UserType> configuration) {
-        this.configuration = configuration;
+    Flight(Bag bag) {
+        this.bag = bag;
     }
     public Flight ignoreFields(String... fieldNames) {
         for (String field : fieldNames) {
@@ -26,6 +26,6 @@ class Flight {
         return this;
     }
     public<T> T dinner(Class<T> type) throws BadLootException {
-        return Heart.dinner(type, ignoringlist, settinglist, configuration);
+        return Heart.dinner(type, ignoringlist, settinglist, bag);
     }
 }
