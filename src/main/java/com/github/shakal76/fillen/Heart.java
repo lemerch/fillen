@@ -33,14 +33,12 @@ class Heart {
             }else if (! ignoringlist.contains(filedName)) {
                 try {
                     Object result = null;
-                    Type[] actual = null;
-                    try {
-                        ParameterizedType paramGenericType = (ParameterizedType) field.getGenericType();
-                        actual = paramGenericType.getActualTypeArguments();
-                    }catch (ClassCastException e) {}
 
                     for (Fillen.Diet diet : bag.get()) {
-                        result = diet.menu(field.getType(), actual);
+                        result = diet.menu(field.getType(),
+                                field.getName(),
+                                new Generic(field.getGenericType()),
+                                field.getDeclaredAnnotations());
                         if (result != null) {
                             wasExist = true;
                             field.set(invoked, result);

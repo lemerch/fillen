@@ -2,6 +2,8 @@ package com.github.shakal76.fillen;
 
 import com.github.shakal76.fillen.exception.BadLootException;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.*;
 
@@ -46,18 +48,33 @@ public class Fillen {
     public abstract static class Diet {
         List<String> ignoringlist = null;
         Map<String, Object> settinglist = null;
-        Bag bag = null;
+        public Bag bag = null;
 
-        public<T> T heart(Class<T> type) throws BadLootException {
+        public Object heart(Class<?> type, String name, Generic generic, Annotation[] annotations) throws BadLootException {
             if (ignoringlist == null || settinglist == null || bag == null) {
                 throw new BadLootException("hava not context");
             }
-            return Heart.dinner(type, ignoringlist, settinglist, bag);
+            Object result = null;
+            boolean was = false;
+            for (Fillen.Diet diet : bag.get()) {
+                Object timed = diet.menu(type, type.getName(), generic, type.getDeclaredAnnotations());
+                if (timed != null) {
+                    result = timed;
+                    was = true;
+                }
+            }
+            if (was) {
+                return result;
+            }else {
+                try {
+                    return Heart.dinner(Class.forName(type.getTypeName()), ignoringlist, settinglist, bag);
+                } catch (Exception e) { return null;}
+            }
         }
         public Boolean isTypesEquals(Class<?> one, Class<?> two) throws BadLootException {
-            return one.isAssignableFrom(two);
+            return two.isAssignableFrom(one);
         }
-        public abstract Object menu(Class<?> type, Type[] generics) throws BadLootException;
+        public abstract Object menu(Class<?> type, String name, Generic generic, Annotation[] annotations) throws BadLootException;
 
     }
 

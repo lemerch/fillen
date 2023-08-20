@@ -1,6 +1,5 @@
 package com.github.shakal76.fillen;
 
-import com.github.shakal76.fillen.base.BaseDietList;
 import com.github.shakal76.fillen.base.BaseDietWrappers;
 
 import java.util.ArrayList;
@@ -11,7 +10,6 @@ public class Bag {
 
     public Bag() {
         this.bag.add(new BaseDietWrappers().diet);
-        this.bag.add(new BaseDietList().diet);
     }
     public void put(Fillen.Diet userType) {
         this.bag.add(userType);

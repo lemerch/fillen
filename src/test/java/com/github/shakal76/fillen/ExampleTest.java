@@ -20,7 +20,6 @@ public class ExampleTest {
         ExamplePojo dinner = fillen.dinner(ExamplePojo.class);
         System.out.println(dinner.getText());
         System.out.println(dinner.getNumber());
-        System.out.println(dinner.getList().get(3).getC() + "--");
-        System.out.println(dinner.getList().size());
+        System.out.println(dinner.getList().get(0).get(0).getC());
     }
 }
