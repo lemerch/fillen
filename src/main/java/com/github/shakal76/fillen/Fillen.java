@@ -40,7 +40,7 @@ import java.util.*;
  * </p>
  */
 public class Fillen {
-    private Context context = new Context();
+    private final Context context = new Context();
 
     // CONFIGURE
     public Fillen(Bag bag) {
@@ -78,16 +78,12 @@ public class Fillen {
 
     public abstract static class Diet {
         Context context;
-        static long id = 0;
-        public Diet() {
-            id += 1;
-        }
 
+        // BE CAREFULLY WITH IT BECAUSE OF RECURSION
         protected Object callback(Ingredients ingredients) throws BadLootException {
             if (context == null) {
                 throw new BadLootException("haven't context");
             }
-
             Object result = null;
             for (Fillen.Diet diet : context.bag.get()) {
                 Object timed = diet.menu(ingredients);
@@ -95,7 +91,6 @@ public class Fillen {
                     result = timed;
                 }
             }
-
             if (result == null) {
                 try {
                     result = Heart.dinner(Class.forName(ingredients.type.getTypeName()), context);
@@ -103,23 +98,25 @@ public class Fillen {
                     throw new BadLootException("I can't find this class - " + ingredients.type.getTypeName() + "\n" + e.getMessage());
                 }
             }
-
             return result;
         }
         protected Object heart(Ingredients ingredients) throws BadLootException {
+            if (context == null) {
+                throw new BadLootException("haven't context");
+            }
             try {
                 return Heart.dinner(Class.forName(ingredients.type.getTypeName()), context);
             } catch (ClassNotFoundException e) {
                 throw new BadLootException("I can't find this class - " + ingredients.type.getTypeName() + "\n" + e.getMessage());
             }
         }
-        protected Boolean isTypesEquals(Class<?> one, Class<?> two) throws BadLootException {
+        protected Boolean isTypesEquals(Class<?> one, Class<?> two) {
             return two.isAssignableFrom(one);
         }
         protected List<Class<?>> getListArray(Class<?> arr) {
             List<Class<?>> array = new ArrayList<>();
             if (arr.isArray()) {
-                Class<?> currentType = arr;
+                Class<?> currentType = arr.getComponentType();
                 while (currentType.isArray()) {
                     array.add(currentType);
                     currentType = currentType.getComponentType();
@@ -132,9 +129,6 @@ public class Fillen {
         }
         public abstract Object menu(Ingredients ingredients) throws BadLootException;
 
-        boolean equals(Fillen.Diet diet) {
-            return this.id == diet.id;
-        }
     }
 
 }

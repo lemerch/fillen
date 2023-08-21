@@ -27,41 +27,28 @@
  */
 package com.github.shakal76.fillen.utils;
 
+import com.github.shakal76.fillen.exception.BadLootException;
+
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ListIterator;
 
-// TODO: change type from String[] to List<String>
 public class Generic {
-    private String[] arr;
-    public Generic(Type type) {
+    private List<Class<?>> generics;
+    public Generic(Type type) throws BadLootException {
         String all = type.getTypeName();
+        this.generics = new ArrayList<>();
         String[] splitted = all.split("<");
-        for (int i = 0; i < splitted.length; i++) {
-            splitted[i] = splitted[i].replaceAll(">", "");
+        for (int i = 1; i < splitted.length; i++) {
+            String className = splitted[i].replaceAll(">", "");
+            try {
+                this.generics.add(Class.forName(className));
+            }catch (ClassNotFoundException e) {
+                throw new BadLootException("I cant find this class: " + className + "\n" + e.getMessage());
+            }
         }
-        this.arr = splitted;
-        removeFirst();
     }
-    public Class<?> getFirst() {
-        try {
-            Class<?> cl = Class.forName(arr[0]);
-            return cl;
-        }catch (ClassNotFoundException e) {}
-        return null;
-    }
-    public Generic removeFirst() {
-        String[] newArr = new String[arr.length-1];
-        for (int i = 1; i < arr.length; i++) {
-            newArr[i-1] = arr[i];
-        }
-        this.arr = newArr;
-        return this;
-    }
-
-    public String[] get() {
-        return arr;
-    }
-
-    public void set(String[] arr) {
-        this.arr = arr;
-    }
+    public List<Class<?>> get() { return this.generics; }
+    public ListIterator iterator() { return this.generics.listIterator(); }
 }

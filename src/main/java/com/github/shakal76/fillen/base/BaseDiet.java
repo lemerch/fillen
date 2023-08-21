@@ -32,13 +32,11 @@ import com.github.shakal76.fillen.Ingredients;
 import com.github.shakal76.fillen.exception.BadLootException;
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
-// TODO: make list as array handler
-// TODO: make ContainerBehaviour class that will be defined filling of List,Set,Map,Arrays behaviour
-// NOW LIST IS NOT WORK BECAUSE OF diet.menu(...)
+/**
+ * This is base 'menu' that can be overwriten by your own Fillen.Diet
+ */
 public class BaseDiet {
     public Fillen.Diet diet = new Fillen.Diet() {
         @Override
@@ -58,81 +56,65 @@ public class BaseDiet {
             }else if(isTypesEquals(ingredients.type, double.class) || isTypesEquals(ingredients.type, Double.class)) {
                 return 5 + (Math.random() * ((10 - 5) + 1));
             }else if(isTypesEquals(ingredients.type, List.class)) {
-                List<Object> obj = new ArrayList<>();
-                Ingredients newIngredients = ingredients
-                            .setType(ingredients.generic.getFirst()).setGeneric(ingredients.generic.removeFirst());
+                List<Object> result = new ArrayList<>();
 
-
-                Object result = callback(newIngredients);
-
-                obj.add(result);
-                return obj;
-            }else if(ingredients.type.isArray()) {
-                List<Class<?>> list = getListArray(ingredients.type);
-                Class<?> newType = list.get(list.size()-1);
-                Ingredients newIngredients = new Ingredients(
-                        newType, newType.getName(), null,
-                        newType.getDeclaredAnnotations(),
-                        newType.getModifiers()
-                );
-                Object result = callback(newIngredients);
-
-                Object array = null;
-                if (list.size() > 2) {
-                    array = Array.newInstance(ingredients.type.getComponentType(), 1);
-                    Object[] info = handling(array, ingredients.type.getComponentType());
-
-                    if (result.getClass().isAssignableFrom(ArrayList.class)) {
-                        List<?> userlist = (List<?>) result;
-                        Object finalArray = Array.newInstance((Class<?>) info[1], userlist.size());
-                        Array.set(info[0], 0, finalArray);
-                        int i = 0;
-                        for (Object o : userlist) {
-                            Array.set(finalArray, i, o);
-                            i++;
+                List<Class<?>> gen = ingredients.generic.get();
+                List<Object> last = new ArrayList<>();
+                for (int i = 0; i < gen.size(); i++) {
+                    if (gen.get(i).isAssignableFrom(List.class)) {
+                        if (i == 0) {
+                            result.add(last);
+                            continue;
                         }
-                        result = array;
-                    } else {
-                        Object finalArray = Array.newInstance((Class<?>) info[1], 1);
-                        Array.set(info[0], 0, finalArray);
-                        Array.set(finalArray, 0, result);
-                        result = array;
-                    }
-                }else {
-                    if (result.getClass().isAssignableFrom(ArrayList.class)) {
-                        List<?> userlist = (List<?>) result;
-                        array = Array.newInstance(list.get(1), userlist.size());
-                        int i = 0;
-                        for (Object o : userlist) {
-                            Array.set(array, i, o);
-                            i++;
-                        }
-                        result = array;
-                    } else {
-                        array = Array.newInstance(list.get(1), 1);
-                        Array.set(array, 0, result);
-                        result = array;
+                        List<Object> temp = new ArrayList<>();
+                        last.add(temp);
+                    }else {
+                        last.add(callback(ingredients.setType(gen.get(i))));
                     }
                 }
 
+                return result;
+            }else if(ingredients.type.isArray()) {
+
+                // WARNING FOR DEVELOPERS:
+                //                         WHEN YOU CREATE NEW INSTANCE
+                //                         LAST ARRAY CELL WILL BE SEEM AS SIMPLE TYPE (j.e int/short etc.)
+                List<Class<?>> list = getListArray(ingredients.type);
+
+                Object result = Array.newInstance(list.get(0), 1);
+                Object last = Array.newInstance(list.get(1), 1);
+                for (int i = 1; i < list.size(); i++) {
+                    if (list.get(i).isArray()) {
+                        if (i == 1) {
+                            Array.set(result, 0, last);
+                            continue;
+                        }
+                        Object temp = Array.newInstance(list.get(i), 1);
+                        Array.set(last, 0, temp);
+                    } else {
+                        Object obj = callback(ingredients.setType(list.get(i)));
+                        if (obj.getClass().isAssignableFrom(ArrayList.class)) {
+                            List<?> values = (List<?>) obj;
+                            // JUST SEE
+                            Object finals = Array.newInstance(list.get(list.size()-1), values.size());
+                            Array.set(last, 0, finals);
+                            Array.set(finals, 0, obj);
+
+                            for (int j = 0; j < values.size(); j++) {
+                                Array.set(last, j, values.get(j));
+                            }
+                        }else {
+                            // JUST SEE
+                            Object finals = Array.newInstance(list.get(list.size()-1), 1);
+                            Array.set(last, 0, finals);
+                            Array.set(finals, 0, obj);
+                        }
+                    }
+                }
                 return result;
             }else {
                 return null;
             }
         }
     };
-
-    public static Object[] handling(Object array, Class<?> currentType) {
-        if (currentType.getComponentType().isArray()) {
-            Object timed = Array.newInstance(currentType.getComponentType(), 1);
-            currentType = currentType.getComponentType();
-            Array.set(array, 0, timed);
-            return handling(timed, currentType);
-        }else {
-            Object[] res = new Object[2];
-            res[0] = array;
-            res[1] = currentType.getComponentType();
-            return res;
-        }
-    }
 }

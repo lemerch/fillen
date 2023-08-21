@@ -1,20 +1,28 @@
 package com.github.shakal76.fillen.pojo;
 
+import java.math.BigDecimal;
 import java.util.List;
 
+/**
+ * GETTERS AND SETTERS NOT REQUIRED
+ */
 public class ExamplePojo {
 
-    private String text[][][];
+    private String[][][] text;
     private Integer number;
 
     private List<List<Other>> list;
 
-    public String[][][] getText() {
-        return text;
+    private BigDecimal decimal;
+
+/////////////////////////////////////////////////////////////////////
+
+    public BigDecimal getDecimal() {
+        return decimal;
     }
 
-    public void setText(String[][][] text) {
-        this.text = text;
+    public String[][][] getText() {
+        return text;
     }
 
     public Integer getNumber() {
@@ -29,7 +37,4 @@ public class ExamplePojo {
         return list;
     }
 
-    public void setList(List<List<Other>> list) {
-        this.list = list;
-    }
 }

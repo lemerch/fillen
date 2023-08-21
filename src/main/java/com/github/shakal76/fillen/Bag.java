@@ -47,9 +47,5 @@ public class Bag {
     public List<Fillen.Diet> get() {
         return this.bag;
     }
-    public void set(Bag bag) {
-        for (Fillen.Diet diet : bag.get()) {
-            this.bag.add(diet);
-        }
-    }
+    public void set(Bag bag) { this.bag.addAll(bag.get()); }
 }

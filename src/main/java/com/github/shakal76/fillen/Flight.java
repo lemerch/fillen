@@ -3,7 +3,7 @@ package com.github.shakal76.fillen;
 import com.github.shakal76.fillen.exception.BadLootException;
 
 class Flight {
-    private Context context;
+    private final Context context;
 
     Flight(Context context) {
         this.context = context;
@@ -19,6 +19,9 @@ class Flight {
         return this;
     }
     public<T> T dinner(Class<T> type) throws BadLootException {
+        for (Fillen.Diet diet : this.context.bag.get()) {
+            diet.context = this.context;
+        }
         return Heart.dinner(type, context);
     }
 }
