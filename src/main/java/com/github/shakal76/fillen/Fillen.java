@@ -68,9 +68,7 @@ public class Fillen {
 
     public<T> T dinner(Class<T> type) throws BadLootException {
         for (Fillen.Diet diet : this.context.bag.get()) {
-            diet.bag = this.context.bag;
-            diet.ignoringlist = this.context.ignoringlist;
-            diet.settinglist = this.context.settinglist;
+            diet.context = this.context;
         }
         return Heart.dinner(type, this.context);
     }
@@ -80,30 +78,40 @@ public class Fillen {
 
     public abstract static class Diet {
         Context context;
+        static long id = 0;
+        public Diet() {
+            id += 1;
+        }
 
-        protected Object heart(Ingredients ingredients) throws BadLootException {
+        protected Object callback(Ingredients ingredients) throws BadLootException {
             if (context == null) {
                 throw new BadLootException("haven't context");
             }
-            Object result = null;
-            try {
-                result = Heart.dinner(Class.forName(ingredients.type.getTypeName()), context);
-            } catch (ClassNotFoundException e) {
-                throw new BadLootException("I can't find this class - " + ingredients.type.getTypeName() + "\n" +e.getMessage());
-            }
 
-            // TODO: remove it
-            if (result == null) {
-                for (Fillen.Diet diet : context.bag.get()) {
-                    Object timed = diet.menu(ingredients);
-                    if (timed != null) {
-                        result = timed;
-                    }
+            Object result = null;
+            for (Fillen.Diet diet : context.bag.get()) {
+                Object timed = diet.menu(ingredients);
+                if (timed != null) {
+                    result = timed;
                 }
             }
-            //////////////////////
+
+            if (result == null) {
+                try {
+                    result = Heart.dinner(Class.forName(ingredients.type.getTypeName()), context);
+                } catch (ClassNotFoundException e) {
+                    throw new BadLootException("I can't find this class - " + ingredients.type.getTypeName() + "\n" + e.getMessage());
+                }
+            }
 
             return result;
+        }
+        protected Object heart(Ingredients ingredients) throws BadLootException {
+            try {
+                return Heart.dinner(Class.forName(ingredients.type.getTypeName()), context);
+            } catch (ClassNotFoundException e) {
+                throw new BadLootException("I can't find this class - " + ingredients.type.getTypeName() + "\n" + e.getMessage());
+            }
         }
         protected Boolean isTypesEquals(Class<?> one, Class<?> two) throws BadLootException {
             return two.isAssignableFrom(one);
@@ -124,6 +132,9 @@ public class Fillen {
         }
         public abstract Object menu(Ingredients ingredients) throws BadLootException;
 
+        boolean equals(Fillen.Diet diet) {
+            return this.id == diet.id;
+        }
     }
 
 }

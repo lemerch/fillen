@@ -59,12 +59,11 @@ public class BaseDiet {
                 return 5 + (Math.random() * ((10 - 5) + 1));
             }else if(isTypesEquals(ingredients.type, List.class)) {
                 List<Object> obj = new ArrayList<>();
-                Ingredients newIngredients = new Ingredients(
-                        ingredients.generic.getFirst(),
-                        ingredients.name, ingredients.generic.removeFirst(),
-                        ingredients.declaredAnnotations, ingredients.modifier
-                );
-                Object result = heart(newIngredients);
+                Ingredients newIngredients = ingredients
+                            .setType(ingredients.generic.getFirst()).setGeneric(ingredients.generic.removeFirst());
+
+
+                Object result = callback(newIngredients);
 
                 obj.add(result);
                 return obj;
@@ -76,7 +75,7 @@ public class BaseDiet {
                         newType.getDeclaredAnnotations(),
                         newType.getModifiers()
                 );
-                Object result = heart(newIngredients);
+                Object result = callback(newIngredients);
 
                 Object array = null;
                 if (list.size() > 2) {
