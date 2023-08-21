@@ -27,29 +27,17 @@
  */
 package com.github.shakal76.fillen;
 
-import com.github.shakal76.fillen.base.BaseDiet;
-
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
- * Bag is a simple container for Fillens.diets objects
+ * <p>This is a simple container for transport it between api -> dinner or diet -> dinner</p>
  */
-public class Bag {
-    private List<Fillen.Diet> bag = new ArrayList<>();
+public class Context {
+    public List<String> ignoringlist = new ArrayList<>();
+    public Map<String, Object> settinglist = new HashMap<>();
+    public Bag bag = new Bag();
 
-    public Bag() {
-        this.bag.add(new BaseDiet().diet);
-    }
-    public void put(Fillen.Diet userType) {
-        this.bag.add(userType);
-    }
-    public List<Fillen.Diet> get() {
-        return this.bag;
-    }
-    public void set(Bag bag) {
-        for (Fillen.Diet diet : bag.get()) {
-            this.bag.add(diet);
-        }
-    }
 }

@@ -1,3 +1,30 @@
+/**
+ * Copyright 2023 Dmitry Terakov
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ⠀⠀⠀⠀⠀⠀⠀
+ * ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠐⣶⣾⣿⣿⣿⣿⣿⣶⡆⠀⠀⠀⠀⠀⠀
+ * ⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⡏⢤⡎⣿⣿⢡⣶⢹⣧⠀⠀⠀⠀⠀⠀
+ * ⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣶⣶⣇⣸⣷⣶⣾⣿⠀⠀⠀⠀⠀⠀
+ * ⠀⠀⠀⠀⠀⠀⠀⠀⠀⢨⣿⣿⣿⢟⣿⣿⣿⣿⣿⣧⡀⠀⠀⠀⠀
+ * ⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⡏⣿⣿⣿⣿⣿⣿⣿⣿⡄⠀⠀⠀
+ * ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⣿⣿⣿⣜⠿⣿⣿⣿⣿⣿⣿⣿⡄⠀⠀
+ * ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠐⣷⣿⡿⣷⣮⣙⠿⣿⣿⣿⣿⣿⡄⠀
+ * ⠀⠀⠠⢄⣀⡀⠀⠀⠀⠀⠀⠈⠫⡯⢿⣿⣿⣿⣶⣯⣿⣻⣿⣿⠀
+ * ⠀⠀⠤⢆⠆⠈⠉⠳⠤⣄⡀⠀⠀⠀⠙⢻⣿⣿⠿⠿⠿⢻⣿⠙⠇
+ *  ⠠⠤⣉⣁⣢⣄⣀⣀⣤⣿⠷⠦⠤⣠⡶⠿⣟⠀⠀⠀⠀⠻⡀⠀
+ * ⠀⠀⠔⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠃⠃⠉⠉⠛⠛⠿⢷⡶⠀
+ */
 package com.github.shakal76.fillen.base;
 
 import com.github.shakal76.fillen.Fillen;
@@ -9,7 +36,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class BaseDietWrappers {
+// TODO: make list as array handler
+// TODO: make ContainerBehaviour class that will be defined filling of List,Set,Map,Arrays behaviour
+// NOW LIST IS NOT WORK BECAUSE OF diet.menu(...)
+public class BaseDiet {
     public Fillen.Diet diet = new Fillen.Diet() {
         @Override
         public Object menu(Ingredients ingredients) throws BadLootException {
@@ -30,8 +60,8 @@ public class BaseDietWrappers {
             }else if(isTypesEquals(ingredients.type, List.class)) {
                 List<Object> obj = new ArrayList<>();
                 Ingredients newIngredients = new Ingredients(
-                        ingredients.generic.get(),
-                        ingredients.name, ingredients.generic.remove(),
+                        ingredients.generic.getFirst(),
+                        ingredients.name, ingredients.generic.removeFirst(),
                         ingredients.declaredAnnotations, ingredients.modifier
                 );
                 Object result = heart(newIngredients);
@@ -93,7 +123,6 @@ public class BaseDietWrappers {
         }
     };
 
-    // TODO: make from it MAP
     public static Object[] handling(Object array, Class<?> currentType) {
         if (currentType.getComponentType().isArray()) {
             Object timed = Array.newInstance(currentType.getComponentType(), 1);
