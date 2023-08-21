@@ -27,6 +27,7 @@
  */
 package com.github.shakal76.fillen;
 
+import com.github.shakal76.fillen.enums.Priority;
 import com.github.shakal76.fillen.exception.BadLootException;
 import com.github.shakal76.fillen.utils.Generic;
 
@@ -76,9 +77,10 @@ class Heart {
                             field.getModifiers()
                     );
                     for (Fillen.Diet diet : context.bag.get()) {
-                        Object temp = diet.menu(ingredients);
-                        if (temp != null) {
-                            result = temp;
+                        Object timed = diet.menu(ingredients);
+                        if (timed != null) {
+                            result = timed;
+                            if (diet.getPriority().equals(Priority.HIGH)) break;
                         }
                     }
                     field.set(invoked, result);

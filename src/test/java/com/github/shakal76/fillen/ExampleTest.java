@@ -1,5 +1,6 @@
 package com.github.shakal76.fillen;
 
+import com.github.shakal76.fillen.enums.Priority;
 import com.github.shakal76.fillen.exception.BadLootException;
 import com.github.shakal76.fillen.pojo.ExamplePojo;
 import org.junit.Test;
@@ -57,5 +58,42 @@ public class ExampleTest {
         System.out.println("number: " + first.getNumber());
         System.out.println("list: " + first.getList().get(0).get(0).getC());
         System.out.println("decimal: " + first.getDecimal());
+    }
+    @Test
+    public void priorityTest() throws BadLootException {
+
+        // LOW PRIORITY AS DEFAULT
+        Fillen.Diet low = new Fillen.Diet() {
+            @Override
+            public Object menu(Ingredients ingredients) throws BadLootException {
+                if (isTypesEquals(ingredients.type, String.class)) {
+                    return "low";
+                }else {
+                    return null;
+                }
+            }
+        };
+
+        Fillen.Diet high = new Fillen.Diet() {
+            @Override
+            public Object menu(Ingredients ingredients) throws BadLootException {
+                if (isTypesEquals(ingredients.type, String.class)) {
+                    return "high";
+                }else {
+                    return null;
+                }
+            }
+        }.setPriority(Priority.HIGH);
+
+        Bag bag = new Bag();
+        bag.put(high);
+        bag.put(low);
+
+        Fillen fillen = new Fillen(bag);
+
+        ExamplePojo first = fillen.dinner(ExamplePojo.class);
+
+        System.out.println("-----------------\nPRIORITYTEST RESULT  (must be [[[high]]]):\n");
+        System.out.println("text: " + Arrays.deepToString(first.getText()));
     }
 }

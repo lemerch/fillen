@@ -27,6 +27,7 @@
  */
 package com.github.shakal76.fillen;
 
+import com.github.shakal76.fillen.enums.Priority;
 import com.github.shakal76.fillen.exception.BadLootException;
 import java.util.*;
 
@@ -39,6 +40,8 @@ import java.util.*;
  *     Just use: {@code new Fillen().dinner(YourClass.class)}
  * </p>
  */
+
+// TODO: arrays test
 public class Fillen {
     private final Context context = new Context();
 
@@ -74,10 +77,19 @@ public class Fillen {
     }
 
     // UTILS
-    // TODO: add priority field
+    // TODO: range priority to ifs
 
     public abstract static class Diet {
         Context context;
+        private Priority priority = Priority.LOW;
+
+        public Priority getPriority() {
+            return priority;
+        }
+        public Diet setPriority(Priority priority) {
+            this.priority = priority;
+            return this;
+        }
 
         // BE CAREFULLY WITH IT BECAUSE OF RECURSION
         protected Object callback(Ingredients ingredients) throws BadLootException {
@@ -89,6 +101,7 @@ public class Fillen {
                 Object timed = diet.menu(ingredients);
                 if (timed != null) {
                     result = timed;
+                    if (diet.getPriority().equals(Priority.HIGH)) break;
                 }
             }
             if (result == null) {
