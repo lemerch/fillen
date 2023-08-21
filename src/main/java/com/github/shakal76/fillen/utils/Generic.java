@@ -25,31 +25,43 @@
  *  ⠠⠤⣉⣁⣢⣄⣀⣀⣤⣿⠷⠦⠤⣠⡶⠿⣟⠀⠀⠀⠀⠻⡀⠀
  * ⠀⠀⠔⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠃⠃⠉⠉⠛⠛⠿⢷⡶⠀
  */
-package com.github.shakal76.fillen;
+package com.github.shakal76.fillen.utils;
 
-import com.github.shakal76.fillen.base.BaseDiet;
+import java.lang.reflect.Type;
 
-import java.util.ArrayList;
-import java.util.List;
-
-/**
- * Bag is a simple container for Fillens.diets objects
- */
-public class Bag {
-    private List<Fillen.Diet> bag = new ArrayList<>();
-
-    public Bag() {
-        this.bag.add(new BaseDiet().diet);
-    }
-    public void put(Fillen.Diet userType) {
-        this.bag.add(userType);
-    }
-    public List<Fillen.Diet> get() {
-        return this.bag;
-    }
-    public void set(Bag bag) {
-        for (Fillen.Diet diet : bag.get()) {
-            this.bag.add(diet);
+// TODO: change type from String[] to List<String>
+public class Generic {
+    private String[] arr;
+    public Generic(Type type) {
+        String all = type.getTypeName();
+        String[] splitted = all.split("<");
+        for (int i = 0; i < splitted.length; i++) {
+            splitted[i] = splitted[i].replaceAll(">", "");
         }
+        this.arr = splitted;
+        removeFirst();
+    }
+    public Class<?> getFirst() {
+        try {
+            Class<?> cl = Class.forName(arr[0]);
+            return cl;
+        }catch (ClassNotFoundException e) {}
+        return null;
+    }
+    public Generic removeFirst() {
+        String[] newArr = new String[arr.length-1];
+        for (int i = 1; i < arr.length; i++) {
+            newArr[i-1] = arr[i];
+        }
+        this.arr = newArr;
+        return this;
+    }
+
+    public String[] get() {
+        return arr;
+    }
+
+    public void set(String[] arr) {
+        this.arr = arr;
     }
 }
