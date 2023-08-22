@@ -19,7 +19,7 @@ public class ExampleTest {
             @Override
             public Object menu(Ingredients ingredients) throws BadLootException {
                 if (isTypesEquals(ingredients.type, Other.class)) {
-                    return heart(ingredients.type);
+                    return dinner(ingredients.type);
                 }
 
                 // ye, its safety :))
@@ -46,7 +46,7 @@ public class ExampleTest {
                 if (isTypesEquals(ingredients.type, BigDecimal.class)) {
                     return new BigDecimal(123);
                 }else if (isTypesEquals(ingredients.type, Other.class)) {
-                    return heart(ingredients.type);
+                    return dinner(ingredients.type);
                 }
 
                 // ye, its safety :))
@@ -83,7 +83,7 @@ public class ExampleTest {
                 if (isTypesEquals(ingredients.type, String.class)) {
                     return "low";
                 }else if (isTypesEquals(ingredients.type, Other.class)) {
-                    return heart(ingredients.type);
+                    return dinner(ingredients.type);
                 }
                 return null;
             }
@@ -95,7 +95,7 @@ public class ExampleTest {
                 if (isTypesEquals(ingredients.type, String.class)) {
                     return "high";
                 }else if (isTypesEquals(ingredients.type, Other.class)) {
-                    return heart(ingredients.type);
+                    return dinner(ingredients.type);
                 }
                 return null;
             }

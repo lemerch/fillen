@@ -105,7 +105,7 @@ public class Fillen {
             }
             return result;
         }
-        protected Object heart(Class<?> type) throws BadLootException {
+        protected Object dinner(Class<?> type) throws BadLootException {
             if (context == null) {
                 throw new BadLootException("haven't context");
             }
