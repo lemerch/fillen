@@ -29,10 +29,12 @@ package com.github.shakal76.fillen;
 
 import com.github.shakal76.fillen.enums.Priority;
 import com.github.shakal76.fillen.exception.BadLootException;
+import com.github.shakal76.fillen.exception.UserDietException;
+
 import java.util.*;
 
 /**
- * <h3>Fillen class is the API of this project</h3>
+ * <h3>Fillen class is API of this project</h3>
  * <p>You can use this class for filling your class's fields. Just use:
  *
  * <blockquote><pre>
@@ -75,7 +77,7 @@ import java.util.*;
  *  </ul>
  * </p>
  */
-
+// TODO: increase library security through encapsulation
 public class Fillen {
     private final Context context = new Context();
 
@@ -117,10 +119,16 @@ public class Fillen {
      * <p>You can realize this class and put it into {@link Fillen} constructor
      *  Even if you process already processed types, your types will still override them.
      *  BUT! If you need a 100% guarantee that it is your type processing logic that will work with fields of the corresponding type,
-     *  then increase its priority to HIGH via {@code Fillen.Diet().setPriority(Priority.HIGH);}
+     *  then increase its priority to HIGH via <blockquote><pre>{@code Fillen.Diet().setPriority(Priority.HIGH);}</pre></blockquote>
      * </p>
      *
      * <p>For an example, you can see it <a href="https://github.com/shakal76/fillen/blob/main/src/test/java/com/github/shakal76/fillen/ExampleTest.java">here</a>
+     *
+     * <p></p>
+     * <h3>IMPORTANT</h3>
+     * <p>When you put your menus in a bag at Priority.LOW of each of them - priority in conflicts will be given to the last non-null</p>
+     *
+     * <p></p>
      *
      * <h3>For Developers</h3>
      * <p>As in the case of {@link Fillen}, I have divided this class into several semantic block, such as:</p>
@@ -179,9 +187,9 @@ public class Fillen {
         // BUILT-IN METHODS
 
         // BE CAREFULLY WITH IT BECAUSE OF RECURSION
-        protected Object callback(Ingredients ingredients) throws BadLootException {
+        protected Object callback(Ingredients ingredients) throws UserDietException {
             if (context == null) {
-                throw new BadLootException("haven't context");
+                throw new UserDietException("haven't context");
             }
             Object result = null;
             for (Fillen.Diet diet : context.bag.get()) {
@@ -193,11 +201,15 @@ public class Fillen {
             }
             return result;
         }
-        protected Object dinner(Class<?> type) throws BadLootException {
+        protected Object dinner(Class<?> type) throws UserDietException {
             if (context == null) {
-                throw new BadLootException("haven't context");
+                throw new UserDietException("haven't context");
             }
-            return Heart.dinner(type, context);
+            try {
+                return Heart.dinner(type, context);
+            }catch (BadLootException e) {
+                throw new UserDietException(e.getMessage());
+            }
         }
         protected Boolean isTypesEquals(Class<?> one, Class<?> two) {
             return two.isAssignableFrom(one);
@@ -218,7 +230,7 @@ public class Fillen {
         }
 
         // TARGET
-        public abstract Object menu(Ingredients ingredients) throws BadLootException;
+        public abstract Object menu(Ingredients ingredients) throws UserDietException;
 
     }
 

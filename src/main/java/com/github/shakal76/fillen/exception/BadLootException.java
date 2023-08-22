@@ -28,7 +28,11 @@
 package com.github.shakal76.fillen.exception;
 
 /**
- * This is the common exception
+ * <p>
+ *     This is the simplest exception to handle many other common exceptions that occur along the way, mainly com.github.shakal76.fillen.Heart
+ * </p>
+ * <p>By the way, rate the name of this exception.
+ * I'm sure you will swear at him more than once :)</p>
  */
 public class BadLootException extends Exception {
     public BadLootException(String message) {

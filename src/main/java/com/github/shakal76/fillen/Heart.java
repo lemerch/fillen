@@ -35,7 +35,26 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 
 /**
- * Heart is default class just for using static method {@code dinner}
+ * <h3>This class chew the heart of the whole application</h3>
+ *
+ * <p>
+ *     This class contains only one method, but it performs the main function of this library.
+ * </p>
+ * <p>It takes the class type and context as input</p>
+ * <p>
+ *     At the output, it returns an already filled object.
+ * This method guarantees that all fields will be filled, i.e. in extreme cases you will get null,
+ * if it should not be ignored - {@link Flight}
+ * </p>
+ * <p>
+ *     The whole process of work can be decomposed into:
+ *     <ul>
+ *         <li>creating an object - there must be a default constructor</li>
+ *         <li>search for fields that should have a specific value (from the setFiled method)</li>
+ *         <li>if the fields should not be initialized, then call custom type handlers</li>
+ *         <li>set the value of the corresponding field</li>
+ *     </ul>
+ * </p>
  */
 class Heart {
     /**

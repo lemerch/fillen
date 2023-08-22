@@ -29,7 +29,7 @@ package com.github.shakal76.fillen.base;
 
 import com.github.shakal76.fillen.Fillen;
 import com.github.shakal76.fillen.Ingredients;
-import com.github.shakal76.fillen.exception.BadLootException;
+import com.github.shakal76.fillen.exception.UserDietException;
 
 import java.lang.reflect.Array;
 import java.util.*;
@@ -40,7 +40,7 @@ import java.util.*;
 public class BaseDiet {
     public Fillen.Diet diet = new Fillen.Diet() {
         @Override
-        public Object menu(Ingredients ingredients) throws BadLootException {
+        public Object menu(Ingredients ingredients) throws UserDietException {
             if(isTypesEquals(ingredients.type, String.class)) {
                 return UUID.randomUUID().toString().replaceAll("-", "");
             }else if(isTypesEquals(ingredients.type, byte.class) || isTypesEquals(ingredients.type, Byte.class)) {

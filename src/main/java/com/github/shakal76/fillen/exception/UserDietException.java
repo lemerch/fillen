@@ -25,12 +25,16 @@
  *  ⠠⠤⣉⣁⣢⣄⣀⣀⣤⣿⠷⠦⠤⣠⡶⠿⣟⠀⠀⠀⠀⠻⡀⠀
  * ⠀⠀⠔⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠃⠃⠉⠉⠛⠛⠿⢷⡶⠀
  */
-package com.github.shakal76.fillen.enums;
+package com.github.shakal76.fillen.exception;
 
 /**
- * <p>This is the simplest enum to determine the priority of a custom type handler - {@link com.github.shakal76.fillen.Fillen.Diet}</p>
+ * <p>
+ *     This is also a very simple type of exception that is needed to more easily identify user errors,
+ *     mainly in {@link com.github.shakal76.fillen.Fillen.Diet}.
+ * </p>
  */
-public enum Priority {
-    LOW,
-    HIGH
+public class UserDietException extends BadLootException {
+    public UserDietException(String message) {
+        super(message);
+    }
 }

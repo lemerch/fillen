@@ -33,7 +33,14 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * <p>This is a simple container for transport it between api -> dinner or diet -> dinner</p>
+ * <h3>This is a simple container for transferring some structures between api -> dinner or diet -> dinner</h3>
+ * <p>You can learn more about these structures here
+ *  <ul>
+ *      <li>{@link Fillen}</li>
+ *      <li>{@link Flight}</li>
+ *      <li>{@link Fillen.Diet}</li>
+ *  </ul>
+ * </p>
  */
 public class Context {
     public List<String> ignoringlist = new ArrayList<>();

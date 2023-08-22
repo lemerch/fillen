@@ -33,7 +33,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Bag is a simple container for Fillens.diets objects
+ * <h3>Bag is a simple container for {@link Fillen.Diet} objects</h3>
+ * <p>Its peculiarity is that it adds a basic type handler to its "bag".</p>
  */
 public class Bag {
     private List<Fillen.Diet> bag = new ArrayList<>();

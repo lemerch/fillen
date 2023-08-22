@@ -2,6 +2,7 @@ package com.github.shakal76.fillen;
 
 import com.github.shakal76.fillen.enums.Priority;
 import com.github.shakal76.fillen.exception.BadLootException;
+import com.github.shakal76.fillen.exception.UserDietException;
 import com.github.shakal76.fillen.pojo.ExamplePojo;
 import com.github.shakal76.fillen.pojo.Other;
 import org.junit.Test;
@@ -17,7 +18,7 @@ public class ExampleTest {
 
         Fillen.Diet diet = new Fillen.Diet() {
             @Override
-            public Object menu(Ingredients ingredients) throws BadLootException {
+            public Object menu(Ingredients ingredients) throws UserDietException {
                 if (isTypesEquals(ingredients.type, Other.class)) {
                     return dinner(ingredients.type);
                 }
@@ -42,7 +43,7 @@ public class ExampleTest {
 
         Fillen.Diet diet = new Fillen.Diet() {
             @Override
-            public Object menu(Ingredients ingredients) throws BadLootException {
+            public Object menu(Ingredients ingredients) throws UserDietException {
                 if (isTypesEquals(ingredients.type, BigDecimal.class)) {
                     return new BigDecimal(123);
                 }else if (isTypesEquals(ingredients.type, Other.class)) {
@@ -79,7 +80,7 @@ public class ExampleTest {
         // LOW PRIORITY AS DEFAULT
         Fillen.Diet low = new Fillen.Diet() {
             @Override
-            public Object menu(Ingredients ingredients) throws BadLootException {
+            public Object menu(Ingredients ingredients) throws UserDietException {
                 if (isTypesEquals(ingredients.type, String.class)) {
                     return "low";
                 }else if (isTypesEquals(ingredients.type, Other.class)) {
@@ -91,7 +92,7 @@ public class ExampleTest {
 
         Fillen.Diet high = new Fillen.Diet() {
             @Override
-            public Object menu(Ingredients ingredients) throws BadLootException {
+            public Object menu(Ingredients ingredients) throws UserDietException {
                 if (isTypesEquals(ingredients.type, String.class)) {
                     return "high";
                 }else if (isTypesEquals(ingredients.type, Other.class)) {
