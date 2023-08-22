@@ -8,20 +8,15 @@ import java.util.List;
  */
 public class ExamplePojo {
 
-    private String[][][] text;
+    private String[][][][][] text;
     private Integer number;
 
     private List<List<Other>> list;
 
     private BigDecimal decimal;
 
-/////////////////////////////////////////////////////////////////////
-
-    public BigDecimal getDecimal() {
-        return decimal;
-    }
-
-    public String[][][] getText() {
+    ////////////////////////////////////////////
+    public String[][][][][] getText() {
         return text;
     }
 
@@ -29,12 +24,11 @@ public class ExamplePojo {
         return number;
     }
 
-    public void setNumber(Integer number) {
-        this.number = number;
-    }
-
     public List<List<Other>> getList() {
         return list;
     }
 
+    public BigDecimal getDecimal() {
+        return decimal;
+    }
 }

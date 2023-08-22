@@ -3,6 +3,7 @@ package com.github.shakal76.fillen;
 import com.github.shakal76.fillen.enums.Priority;
 import com.github.shakal76.fillen.exception.BadLootException;
 import com.github.shakal76.fillen.pojo.ExamplePojo;
+import com.github.shakal76.fillen.pojo.Other;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -14,8 +15,19 @@ public class ExampleTest {
     @Test
     public void firstExample() throws BadLootException {
 
+        Fillen.Diet diet = new Fillen.Diet() {
+            @Override
+            public Object menu(Ingredients ingredients) throws BadLootException {
+                if (isTypesEquals(ingredients.type, Other.class)) {
+                    return heart(ingredients.type);
+                }
 
-        Fillen fillen = new Fillen();
+                // ye, its safety :))
+                return null;
+            }
+        };
+
+        Fillen fillen = new Fillen(diet);
 
         ExamplePojo first = fillen.dinner(ExamplePojo.class);
 
@@ -33,9 +45,11 @@ public class ExampleTest {
             public Object menu(Ingredients ingredients) throws BadLootException {
                 if (isTypesEquals(ingredients.type, BigDecimal.class)) {
                     return new BigDecimal(123);
+                }else if (isTypesEquals(ingredients.type, Other.class)) {
+                    return heart(ingredients.type);
                 }
 
-                // ye, it safety :))
+                // ye, its safety :))
                 return null;
             }
         };
@@ -68,9 +82,10 @@ public class ExampleTest {
             public Object menu(Ingredients ingredients) throws BadLootException {
                 if (isTypesEquals(ingredients.type, String.class)) {
                     return "low";
-                }else {
-                    return null;
+                }else if (isTypesEquals(ingredients.type, Other.class)) {
+                    return heart(ingredients.type);
                 }
+                return null;
             }
         };
 
@@ -79,9 +94,10 @@ public class ExampleTest {
             public Object menu(Ingredients ingredients) throws BadLootException {
                 if (isTypesEquals(ingredients.type, String.class)) {
                     return "high";
-                }else {
-                    return null;
+                }else if (isTypesEquals(ingredients.type, Other.class)) {
+                    return heart(ingredients.type);
                 }
+                return null;
             }
         }.setPriority(Priority.HIGH);
 

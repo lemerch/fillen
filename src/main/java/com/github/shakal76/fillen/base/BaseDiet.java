@@ -64,10 +64,10 @@ public class BaseDiet {
                     if (gen.get(i).isAssignableFrom(List.class)) {
                         if (i == 0) {
                             result.add(last);
-                            continue;
+                        }else {
+                            List<Object> temp = new ArrayList<>();
+                            last.add(temp);
                         }
-                        List<Object> temp = new ArrayList<>();
-                        last.add(temp);
                     }else {
                         last.add(callback(ingredients.setType(gen.get(i))));
                     }
@@ -77,44 +77,58 @@ public class BaseDiet {
             }else if(ingredients.type.isArray()) {
 
                 // WARNING FOR DEVELOPERS:
-                //                         WHEN YOU CREATE NEW INSTANCE
-                //                         LAST ARRAY CELL WILL BE SEEM AS SIMPLE TYPE (j.e int/short etc.)
+                //                         LAST CELL OF getListArray's LIST
+                //                         WILL BE SEEM AS SIMPLE TYPE, BUT YOU MUST CREATE NEW ARRAY INSTANCE FOR IT
                 List<Class<?>> list = getListArray(ingredients.type);
 
-                Object result = Array.newInstance(list.get(0), 1);
-                Object last = Array.newInstance(list.get(1), 1);
-                for (int i = 1; i < list.size(); i++) {
-                    if (list.get(i).isArray()) {
-                        if (i == 1) {
-                            Array.set(result, 0, last);
-                            continue;
-                        }
-                        Object temp = Array.newInstance(list.get(i), 1);
-                        Array.set(last, 0, temp);
-                    } else {
-                        Object obj = callback(ingredients.setType(list.get(i)));
-                        if (obj.getClass().isAssignableFrom(ArrayList.class)) {
-                            List<?> values = (List<?>) obj;
-                            // JUST SEE
-                            Object finals = Array.newInstance(list.get(list.size()-1), values.size());
-                            Array.set(last, 0, finals);
-                            Array.set(finals, 0, obj);
+                Object obj = callback(ingredients.setType(list.get(list.size()-1)));
 
-                            for (int j = 0; j < values.size(); j++) {
-                                Array.set(last, j, values.get(j));
-                            }
+                Object result = null;
+                if (list.size() == 1) {
+                    result = arrayRules(obj, list.get(list.size()-1));
+                }else if(list.size() == 2) {
+                    Object temp = Array.newInstance(list.get(0), 1);
+                    Object last = arrayRules(obj, list.get(list.size()-1));
+                    Array.set(temp, 0, last);
+                    result = temp;
+                }else {
+                    Object root = Array.newInstance(list.get(0), 1);
+                    Object previous = Array.newInstance(list.get(1), 1);
+                    for (int i = 1; i < list.size()-1; i++) {
+                        if (i == 1) {
+                            Array.set(root, 0, previous);
                         }else {
-                            // JUST SEE
-                            Object finals = Array.newInstance(list.get(list.size()-1), 1);
-                            Array.set(last, 0, finals);
-                            Array.set(finals, 0, obj);
+                            Object temp = Array.newInstance(list.get(i), 1);
+                            Array.set(previous, 0, temp);
+                            previous = temp;
                         }
                     }
+                    Object last = arrayRules(obj, list.get(list.size()-1));
+                    Array.set(previous, 0, last);
+                    result = root;
                 }
+
                 return result;
             }else {
                 return null;
             }
         }
     };
+
+    public Object arrayRules(Object fromCallback, Class<?> targetType) {
+        if (fromCallback.getClass().isAssignableFrom(ArrayList.class)) {
+            List<?> values = (List<?>) fromCallback;
+
+            Object finals = Array.newInstance(targetType, values.size());
+
+            for (int j = 0; j < values.size(); j++) {
+                Array.set(finals, j, values.get(j));
+            }
+            return finals;
+        }else {
+            Object finals = Array.newInstance(targetType, 1);
+            Array.set(finals, 0, fromCallback);
+            return finals;
+        }
+    }
 }

@@ -77,7 +77,6 @@ public class Fillen {
     }
 
     // UTILS
-    // TODO: range priority to ifs
 
     public abstract static class Diet {
         Context context;
@@ -104,24 +103,13 @@ public class Fillen {
                     if (diet.getPriority().equals(Priority.HIGH)) break;
                 }
             }
-            if (result == null) {
-                try {
-                    result = Heart.dinner(Class.forName(ingredients.type.getTypeName()), context);
-                } catch (ClassNotFoundException e) {
-                    throw new BadLootException("I can't find this class - " + ingredients.type.getTypeName() + "\n" + e.getMessage());
-                }
-            }
             return result;
         }
-        protected Object heart(Ingredients ingredients) throws BadLootException {
+        protected Object heart(Class<?> type) throws BadLootException {
             if (context == null) {
                 throw new BadLootException("haven't context");
             }
-            try {
-                return Heart.dinner(Class.forName(ingredients.type.getTypeName()), context);
-            } catch (ClassNotFoundException e) {
-                throw new BadLootException("I can't find this class - " + ingredients.type.getTypeName() + "\n" + e.getMessage());
-            }
+            return Heart.dinner(type, context);
         }
         protected Boolean isTypesEquals(Class<?> one, Class<?> two) {
             return two.isAssignableFrom(one);
