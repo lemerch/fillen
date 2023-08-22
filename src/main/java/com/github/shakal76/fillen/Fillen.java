@@ -32,16 +32,53 @@ import com.github.shakal76.fillen.exception.BadLootException;
 import java.util.*;
 
 /**
- * <h3>Fillen class is api of this project</h3>
- * <p>
- *     You can use it for filling your class's fields.
+ * <h3>Fillen class is the API of this project</h3>
+ * <p>You can use this class for filling your class's fields. Just use:
+ *
+ * <blockquote><pre>
+ *     {@code new Fillen().dinner(MyClass.class);}
+ * </pre></blockquote>
+ * it will return your filling and prepared object. You can also manipulate
+ * with fillen behaviour. Just example you have such methods as:
+ *  <ul>
+ *      <li><blockquote>{@code ingoreFields(String... fields)}</blockquote></li>
+ *      <li><blockquote>{@code setField(String name, Object value)}</blockquote></li>
+ *  </ul>
+ *
+ *  And of course you have such instrument as:
+ *  <blockquote><pre>{@code abstract static class Fillen.Diet; }</pre></blockquote>
+ *
+ *  With it, you can process your new types or redefine the logic of filling in existing ones.
+ *  For more information, see {@link Fillen.Diet}
  * </p>
- * <p>
- *     Just use: {@code new Fillen().dinner(YourClass.class)}
+ *
+ * <p></p>
+ *
+ * <h3>For Developers</h3>
+ * <p>I have divided the API into 4 semantic blocks
+ *  <ul>
+ *      <li>CONFIGURE - this block is a group of constructors that accept
+ *      {@link Bag}
+ *      or it component {@link Fillen.Diet}</li>
+ *  </ul>
+ *  <ul>
+ *      <li>INTERMEDIATE HANDLERS - this block consists of 2 methods:
+ *          <blockquote><pre>{@code ingoreFields(String... fields)}</pre></blockquote>
+ *          <blockquote><pre>{@code setField(String name, Object value)}</pre></blockquote>
+ *          for additional configuration
+ *      and returns {@link Flight}</li>
+ *  </ul>
+ *  <ul>
+ *      <li>PERFERMER - this is the most important block, it is he who acts as a service in this application.
+ *      BUT. before calling {@code Heart.dinner(...))} he should provide everyone with a {@code Fillen.Diet} in {@code context.bag} this very context</li>
+ *  </ul>
+ *  <ul>
+ *      <li>UTILS - it consists of one {@code abstract static class Fillen.Diet; }, but despite this, it is no less important especially for users
+ *      For more information about this class read here {@link Fillen.Diet}</li>
+ *  </ul>
  * </p>
  */
 
-// TODO: arrays test
 public class Fillen {
     private final Context context = new Context();
 
@@ -78,6 +115,9 @@ public class Fillen {
 
     // UTILS
 
+    /**
+     *
+     */
     public abstract static class Diet {
         Context context;
         private Priority priority = Priority.LOW;
@@ -89,6 +129,8 @@ public class Fillen {
             this.priority = priority;
             return this;
         }
+
+        // BUILT-IN METHODS
 
         // BE CAREFULLY WITH IT BECAUSE OF RECURSION
         protected Object callback(Ingredients ingredients) throws BadLootException {
