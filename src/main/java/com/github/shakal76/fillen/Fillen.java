@@ -60,19 +60,16 @@ import java.util.*;
  *      <li>CONFIGURE - this block is a group of constructors that accept
  *      {@link Bag}
  *      or it component {@link Fillen.Diet}</li>
- *  </ul>
- *  <ul>
+ *
  *      <li>INTERMEDIATE HANDLERS - this block consists of 2 methods:
  *          <blockquote><pre>{@code ingoreFields(String... fields)}</pre></blockquote>
  *          <blockquote><pre>{@code setField(String name, Object value)}</pre></blockquote>
  *          for additional configuration
  *      and returns {@link Flight}</li>
- *  </ul>
- *  <ul>
+ *
  *      <li>PERFERMER - this is the most important block, it is he who acts as a service in this application.
  *      BUT. before calling {@code Heart.dinner(...))} he should provide everyone with a {@code Fillen.Diet} in {@code context.bag} this very context</li>
- *  </ul>
- *  <ul>
+ *
  *      <li>UTILS - it consists of one {@code abstract static class Fillen.Diet; }, but despite this, it is no less important especially for users
  *      For more information about this class read here {@link Fillen.Diet}</li>
  *  </ul>
@@ -116,10 +113,59 @@ public class Fillen {
     // UTILS
 
     /**
+     * <h3>Fillen.Diet abstract class is instrument for users type controll</h3>
+     * <p>You can realize this class and put it into {@link Fillen} constructor
+     *  Even if you process already processed types, your types will still override them.
+     *  BUT! If you need a 100% guarantee that it is your type processing logic that will work with fields of the corresponding type,
+     *  then increase its priority to HIGH via {@code Fillen.Diet().setPriority(Priority.HIGH);}
+     * </p>
      *
+     * <p>For an example, you can see it <a href="https://github.com/shakal76/fillen/blob/main/src/test/java/com/github/shakal76/fillen/ExampleTest.java">here</a>
+     *
+     * <h3>For Developers</h3>
+     * <p>As in the case of {@link Fillen}, I have divided this class into several semantic block, such as:</p>
+     *
+     * <ul>
+     *      <li>CONFIGURE - this block is a simple private field of {@link Priority} type and its setter with getter.
+     *      Pay attention to the setter, it returns its own object, so you can assign priority to it immediately after creating the menu</li>
+     *
+     *      <li>BUILT-IN METHODS - this is an entertaining block that will make it easier for you to work with reflection.
+     *      It contains several small but very important methods that you can use only when implementing this class.
+     *      There are such methods as:
+     *          <ul>
+     *              <li>callback - this method will allow you to return to the previous {@code Fillen.diet.menu(...)}
+     *              for processing nested classes (currently used in {@link com.github.shakal76.fillen.base.BaseDiet}
+     *              for structures such as List and primitive arrays)
+     *
+     *              <p></p>
+     *              <h4>WARNING</h4>
+     *              this method should be used quite carefully because it can cause recursion and then StackOverflowException</li>
+     *              <p></p>
+     *
+     *              <li>dinner - this method will allow you to call {@link Heart}.dinner while passing you the current context.
+     *              This method is very useful if you have a field that is also a class that needs to be filled in.</li>
+     *
+     *              <p></p>
+     *
+     *              <li>getListArray - a very useful method for determining the behavior of filling arrays.
+     *              It returns a list of array types of different nesting that must be created with multidimensional arrays.
+     *              You can see an example of use in {@link com.github.shakal76.fillen.base.BaseDiet}</li>
+     *
+     *              <p></p>
+     *
+     *              <li>isTypesEquals - the simplest possible method that checks whether the data types match
+     *              it is made for easier reading of custom Fillen.Diet.menu</li>
+     *           </ul>
+     *      </li>
+     *
+     *      <li>TARGET - there is only one method in this block.
+     *      The same non-implemented abstract method that I hope you will be able to implement easily :)</li>
+     * </ul>
      */
     public abstract static class Diet {
         Context context;
+
+        // CONFIGURE
         private Priority priority = Priority.LOW;
 
         public Priority getPriority() {
@@ -170,6 +216,8 @@ public class Fillen {
                 return null;
             }
         }
+
+        // TARGET
         public abstract Object menu(Ingredients ingredients) throws BadLootException;
 
     }
