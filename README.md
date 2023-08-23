@@ -1,5 +1,6 @@
 
-![logo](static/logo.png)
+![logo](static/logotype.jpg)
+
 # Foreward
-</div>
+
 
