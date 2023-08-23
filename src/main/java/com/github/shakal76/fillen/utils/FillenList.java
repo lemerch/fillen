@@ -25,28 +25,29 @@
  *  ⠠⠤⣉⣁⣢⣄⣀⣀⣤⣿⠷⠦⠤⣠⡶⠿⣟⠀⠀⠀⠀⠻⡀⠀
  * ⠀⠀⠔⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠃⠃⠉⠉⠛⠛⠿⢷⡶⠀
  */
-package com.github.shakal76.fillen;
+package com.github.shakal76.fillen.utils;
 
-import com.github.shakal76.fillen.base.BaseDiet;
-
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
- * <h3>Bag is a simple container for {@link Fillen.Diet} objects</h3>
- * <p>Its peculiarity is that it adds a basic type handler to its "bag".</p>
+ * <h3>FillenList is a simple wrapper of a regular ArrayList</h3>
+ * <p>
+ *     This is necessary to separate user logic from software logic.
+ *     So for example, if you process classes based on their interfaces, then ArrayList will
+ *     contain Collection, but FillinList does not. It's just more secure
+ * </p>
+ * @param <T>
  */
-public class Bag {
-    private List<Fillen.Diet> bag = new ArrayList<>();
+public class FillenList<T> {
+    private List<T> arr;
 
-    public Bag() {
-        this.bag.add(new BaseDiet().diet);
+    public FillenList(int size) {
+        this.arr = new ArrayList<>(size);
     }
-    public void put(Fillen.Diet userType) {
-        this.bag.add(userType);
+    public FillenList() {
+        this.arr = new ArrayList<>();
     }
-    public List<Fillen.Diet> get() {
-        return this.bag;
-    }
-    public void set(Bag bag) { this.bag.addAll(bag.get()); }
+
+    public List<T> getList() {return arr;}
+    public void setList(List<T> list) {this.arr = list;}
 }

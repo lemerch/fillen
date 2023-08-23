@@ -1,19 +1,77 @@
+/**
+ * Copyright 2023 Dmitry Terakov
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ⠀⠀⠀⠀⠀⠀⠀
+ * ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠐⣶⣾⣿⣿⣿⣿⣿⣶⡆⠀⠀⠀⠀⠀⠀
+ * ⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⡏⢤⡎⣿⣿⢡⣶⢹⣧⠀⠀⠀⠀⠀⠀
+ * ⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣶⣶⣇⣸⣷⣶⣾⣿⠀⠀⠀⠀⠀⠀
+ * ⠀⠀⠀⠀⠀⠀⠀⠀⠀⢨⣿⣿⣿⢟⣿⣿⣿⣿⣿⣧⡀⠀⠀⠀⠀
+ * ⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⡏⣿⣿⣿⣿⣿⣿⣿⣿⡄⠀⠀⠀
+ * ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⣿⣿⣿⣜⠿⣿⣿⣿⣿⣿⣿⣿⡄⠀⠀
+ * ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠐⣷⣿⡿⣷⣮⣙⠿⣿⣿⣿⣿⣿⡄⠀
+ * ⠀⠀⠠⢄⣀⡀⠀⠀⠀⠀⠀⠈⠫⡯⢿⣿⣿⣿⣶⣯⣿⣻⣿⣿⠀
+ * ⠀⠀⠤⢆⠆⠈⠉⠳⠤⣄⡀⠀⠀⠀⠙⢻⣿⣿⠿⠿⠿⢻⣿⠙⠇
+ *  ⠠⠤⣉⣁⣢⣄⣀⣀⣤⣿⠷⠦⠤⣠⡶⠿⣟⠀⠀⠀⠀⠻⡀⠀
+ * ⠀⠀⠔⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠃⠃⠉⠉⠛⠛⠿⢷⡶⠀
+ */
 package com.github.shakal76.fillen;
 
+import com.github.shakal76.fillen.enums.Priority;
 import com.github.shakal76.fillen.exception.BadLootException;
+import com.github.shakal76.fillen.utils.FillenList;
+import com.github.shakal76.fillen.utils.Generic;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.Collection;
+import java.util.Map;
 
+/**
+ * <h3>This class chew the heart of the whole application</h3>
+ *
+ * <p>
+ *     This class contains only one method, but it performs the main function of this library.
+ * </p>
+ * <p>It takes the class type and context as input</p>
+ * <p>
+ *     At the output, it returns an already filled object.
+ * This method guarantees that all fields will be filled, i.e. in extreme cases you will get null,
+ * if it should not be ignored - {@link Flight}
+ * </p>
+ * <p>
+ *     The whole process of work can be decomposed into:
+ *     <ul>
+ *         <li>creating an object - there must be a default constructor</li>
+ *         <li>search for fields that should have a specific value (from the setFiled method)</li>
+ *         <li>if the fields should not be initialized, then call custom type handlers</li>
+ *         <li>set the value of the corresponding field</li>
+ *     </ul>
+ * </p>
+ */
 class Heart {
-    public static<T> T dinner(Class<T> type,
-                              List<Object> ignoringlist,
-                              Map<String, Object> settinglist,
-                              Bag bag) throws BadLootException {
+    /**
+     * <p>This is the central method of this project, that fill your class's fields</p>
+     * @param type class that need to fill
+     * @param context type that allowed this method get {@code ignorelist, settinglist and bag}
+     * @return type that you send in @param type
+     * @param <T> filled class that was selected in @param type
+     * @throws BadLootException as common exception
+     */
+    public static<T> T dinner(Class<T> type, Context context) throws BadLootException {
 
-        Object invoked = null;
+
+        T invoked;
         try {
             invoked = type.getConstructor().newInstance();
         }catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
@@ -23,106 +81,46 @@ class Heart {
         for (Field field : type.getDeclaredFields()) {
             field.setAccessible(true);
             String filedName = field.getName();
-            Ingredients ingredients = new Ingredients(
-                    field.getType(), field.getName(),
-                    field.getDeclaredAnnotations(), field.getModifiers());
-
-            if (settinglist.containsKey(filedName)) {
+            if (context.settinglist.containsKey(filedName)) {
                 try {
-                    field.set(invoked, settinglist.get(filedName));
+                    field.set(invoked, context.settinglist.get(filedName));
+                }catch (IllegalAccessException e) {
+                    throw new BadLootException("I cant set value into field: " + field.getName() +
+                            ";\nin class: " + type + "\n" + e.getMessage());
                 }
-                catch (Exception e) {}
-            }else if (! ignoringlist.contains(filedName)) {
+            }else if (! context.ignoringlist.contains(filedName)) {
                 try {
                     Object result = null;
 
-                    // ARRAYS
-                    if (field.getType().isArray()) {
-                        if (field.getType().getComponentType().isArray()) {
-                            Object array = Array.newInstance(field.getType().getComponentType(), 1);
-                            Object[] lastInfo = handling(array, field.getType().getComponentType());
-                            // get size
-                            Ingredients newingredients = new Ingredients(
-                                    ((Class<?>) lastInfo[1]), field.getName(),
-                                    field.getDeclaredAnnotations(), field.getModifiers());
-                            for (Fillen.Diet diet : bag.get()) {
-                                Object timed = diet.menu(newingredients);
-                                if (timed != null) {
-                                    result = timed;
-                                }
-                            }
-                            if (result.getClass().isAssignableFrom(ArrayList.class)) {
-                                List<?> list = (List<?>) result;
-                                Object finalArray = Array.newInstance((Class<?>) lastInfo[1], list.size());
-                                Array.set(lastInfo[0], 0, finalArray);
-                                int i = 0;
-                                for (Object o : list) {
-                                    Array.set(finalArray, i, o);
-                                    i++;
-                                }
-                                result = array;
-                            } else {
-                                Object finalArray = Array.newInstance((Class<?>) lastInfo[1], 1);
-                                Array.set(lastInfo[0], 0, finalArray);
-                                Array.set(finalArray, 0, result);
-                                result = array;
-                            }
-                        } else {
-                            // get size
-                            Ingredients newingredients = new Ingredients(
-                                    field.getType().getComponentType(), field.getName(),
-                                    field.getDeclaredAnnotations(), field.getModifiers());
-
-                            for (Fillen.Diet diet : bag.get()) {
-                                Object timed = diet.menu(newingredients);
-                                if (timed != null) {
-                                    result = timed;
-                                }
-                            }
-                            if (result.getClass().isAssignableFrom(ArrayList.class)) {
-                                List<?> list = (List<?>) result;
-                                Object array = Array.newInstance(field.getType().getComponentType(), list.size());
-                                int i = 0;
-                                for (Object o : list) {
-                                    Array.set(array, i, o);
-                                    i++;
-                                }
-                                result = array;
-                            } else {
-                                Object array = Array.newInstance(field.getType().getComponentType(), 1);
-                                Array.set(array, 0, result);
-                                result = array;
-                            }
+                    Ingredients ingredients = new Ingredients(
+                            field.getType(), field.getName(),
+                            new Generic(field.getGenericType()),
+                            field.getDeclaredAnnotations(),
+                            field.getModifiers()
+                    );
+                    for (Fillen.Diet diet : context.bag.get()) {
+                        Object timed = diet.menu(ingredients);
+                        if (timed != null) {
+                            result = timed;
+                            if (diet.getPriority().equals(Priority.HIGH)) break;
                         }
-                    }else {
-                        for (Fillen.Diet diet : bag.get()) {
-                            Object timed = diet.menu(ingredients);
-                            if (timed != null) {
-                                result = timed;
-                            }
+                    }
+                    // TODO: add info about it into javadoc
+                    if (result != null) {
+                        if (result.getClass().isAssignableFrom(FillenList.class)) {
+                            FillenList list = (FillenList) result;
+                            result = list.getList().get(0);
                         }
                     }
                     field.set(invoked, result);
                 }catch (IllegalAccessException e) {
-                    throw new BadLootException(e.getMessage());
+                    throw new BadLootException("I cant set value into field: " + field.getName() +
+                            ";\nin class: " + type + "\n" + e.getMessage());
                 }
             }
             field.setAccessible(false);
         }
-        return (T) invoked;
-    }
-    public static Object[] handling(Object array, Class<?> currentType) {
-        if (currentType.getComponentType().isArray()) {
-            Object timed = Array.newInstance(currentType.getComponentType(), 1);
-            currentType = currentType.getComponentType();
-            Array.set(array, 0, timed);
-            return handling(timed, currentType);
-        }else {
-            Object[] res = new Object[2];
-            res[0] = array;
-            res[1] = currentType.getComponentType();
-            return res;
-        }
-    }
 
+        return invoked;
+    }
 }

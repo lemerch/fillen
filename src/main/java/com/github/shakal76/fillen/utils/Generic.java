@@ -25,28 +25,30 @@
  *  ⠠⠤⣉⣁⣢⣄⣀⣀⣤⣿⠷⠦⠤⣠⡶⠿⣟⠀⠀⠀⠀⠻⡀⠀
  * ⠀⠀⠔⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠃⠃⠉⠉⠛⠛⠿⢷⡶⠀
  */
-package com.github.shakal76.fillen;
+package com.github.shakal76.fillen.utils;
 
-import com.github.shakal76.fillen.base.BaseDiet;
+import com.github.shakal76.fillen.exception.BadLootException;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
-/**
- * <h3>Bag is a simple container for {@link Fillen.Diet} objects</h3>
- * <p>Its peculiarity is that it adds a basic type handler to its "bag".</p>
- */
-public class Bag {
-    private List<Fillen.Diet> bag = new ArrayList<>();
-
-    public Bag() {
-        this.bag.add(new BaseDiet().diet);
+public class Generic {
+    private List<Class<?>> generics;
+    public Generic(Type type) throws BadLootException {
+        String all = type.getTypeName();
+        this.generics = new ArrayList<>();
+        String[] splitted = all.split("<");
+        for (int i = 1; i < splitted.length; i++) {
+            String className = splitted[i].replaceAll(">", "");
+            try {
+                this.generics.add(Class.forName(className));
+            }catch (ClassNotFoundException e) {
+                throw new BadLootException("I cant find this class: " + className + "\n" + e.getMessage());
+            }
+        }
     }
-    public void put(Fillen.Diet userType) {
-        this.bag.add(userType);
-    }
-    public List<Fillen.Diet> get() {
-        return this.bag;
-    }
-    public void set(Bag bag) { this.bag.addAll(bag.get()); }
+    public List<Class<?>> get() { return this.generics; }
+    public ListIterator iterator() { return this.generics.listIterator(); }
 }
