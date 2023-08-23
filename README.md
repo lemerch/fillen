@@ -1,13 +1,5 @@
-<div style="background-color: rgb(360, 360, 360);color:black;">
 
+![logo](static/logo.png)
 # Foreward
-
-``python
-print("Yo!")
-``
-
 </div>
 
-``python
-print("Yo!")
-``
