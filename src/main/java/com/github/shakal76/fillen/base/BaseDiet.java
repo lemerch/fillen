@@ -30,6 +30,7 @@ package com.github.shakal76.fillen.base;
 import com.github.shakal76.fillen.Fillen;
 import com.github.shakal76.fillen.Ingredients;
 import com.github.shakal76.fillen.exception.UserDietException;
+import com.github.shakal76.fillen.utils.FillenList;
 
 import java.lang.reflect.Array;
 import java.util.*;
@@ -69,7 +70,14 @@ public class BaseDiet {
                             last.add(temp);
                         }
                     }else {
-                        last.add(callback(ingredients.setType(gen.get(i))));
+                        Object obj = callback(ingredients.setType(gen.get(i)));
+                        // list Rules
+                        if (obj.getClass().isAssignableFrom(FillenList.class)) {
+                            FillenList<Object> userList = (FillenList) obj;
+                            last.addAll(userList.getList());
+                        }else {
+                            last.add(obj);
+                        }
                     }
                 }
 
@@ -116,8 +124,8 @@ public class BaseDiet {
     };
 
     public Object arrayRules(Object fromCallback, Class<?> targetType) {
-        if (fromCallback.getClass().isAssignableFrom(ArrayList.class)) {
-            List<?> values = (List<?>) fromCallback;
+        if (fromCallback.getClass().isAssignableFrom(FillenList.class)) {
+            List<Object> values = ((FillenList)fromCallback).getList();
 
             Object finals = Array.newInstance(targetType, values.size());
 

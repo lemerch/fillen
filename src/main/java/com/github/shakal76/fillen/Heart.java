@@ -29,10 +29,13 @@ package com.github.shakal76.fillen;
 
 import com.github.shakal76.fillen.enums.Priority;
 import com.github.shakal76.fillen.exception.BadLootException;
+import com.github.shakal76.fillen.utils.FillenList;
 import com.github.shakal76.fillen.utils.Generic;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * <h3>This class chew the heart of the whole application</h3>
@@ -100,6 +103,13 @@ class Heart {
                         if (timed != null) {
                             result = timed;
                             if (diet.getPriority().equals(Priority.HIGH)) break;
+                        }
+                    }
+                    // TODO: add info about it into javadoc
+                    if (result != null) {
+                        if (result.getClass().isAssignableFrom(FillenList.class)) {
+                            FillenList list = (FillenList) result;
+                            result = list.getList().get(0);
                         }
                     }
                     field.set(invoked, result);

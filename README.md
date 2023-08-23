@@ -180,9 +180,12 @@ _______________
 
 # TODO:
 
+- ADD CONVERTER and info about it into readme
 - Improve image quality
 - Check text of readme
 - add to readme - userdietexception
 - add commit rules
+- add javadoc to BaseDiet, Generic, Heart
+- add diagram of architype
 
 Filins color - #53F4CC
