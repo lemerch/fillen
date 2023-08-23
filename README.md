@@ -15,6 +15,10 @@ Why do I need this library? The original purpose of this bible library was to fi
 
 Individual application examples can be viewed in the [tests](/src/test/java/com/github/shakal76/fillen/ExampleTest.java)
 
+# Licese
+
+Apache License Version 2.0
+
 # How it works?
 
 <img alt="first" height="50" src="static/1.png" width="50" style="display: inline;"/>  
