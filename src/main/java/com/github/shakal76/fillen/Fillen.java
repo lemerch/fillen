@@ -82,6 +82,7 @@ public class Fillen {
     private final Context context = new Context();
 
     // CONFIGURE
+    public Fillen() {}
     public Fillen(Bag bag) {
         this.context.bag = bag;
     }
