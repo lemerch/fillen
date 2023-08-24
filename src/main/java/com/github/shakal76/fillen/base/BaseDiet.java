@@ -36,7 +36,42 @@ import java.lang.reflect.Array;
 import java.util.*;
 
 /**
- * This is base 'menu' that can be overwriten by your own Fillen.Diet
+ * <h3>BaseDiet is a diet to support basic data types</h3>
+ * <p>
+ *  This is a standard diet for our owl, its essence is to support the following types:
+ *  <ul>
+ *      <li>String</li>
+ *      <li>byte</li>
+ *      <li>short</li>
+ *      <li>int</li>
+ *      <li>long</li>
+ *      <li>float</li>
+ *      <li>double</li>
+ *      <li>List</li>
+ *      <li>arrays</li>
+ *  </ul>
+ *  the value of which is random, except list and array.
+ *  List and array work according to the following logic:
+ *  if it is a container, then we find out the nesting and generate it until we reach the final type,
+ *  and then we check whether it is a {@link FillenList},
+ *  if so, then we take all its elements and put them in their last list,
+ *  otherwise just the container value in the last container.
+ *
+ *  To simplify such logic, there is a {@link com.github.shakal76.fillen.utils.Generic} class for working with generic types, which you can iteratively go through.
+ *
+ *  And for simple arrays there is a built-in method in {@link Fillen.Diet} - getListArray - which also converts a sequence of arrays into a list,
+ *  which will also be convenient for iterating and creating similar logic.
+ * </p>
+ *
+ * <p></p>
+ *
+ * <h4>NOTICE</h4>
+ * <p>
+ *  the last element of the resulting list from the getListArray method is the final type, however,
+ *  if you create primitive arrays through reflection, then keep in mind that a new class must also be created for this last element.
+ *  See the implementation example before making your own container handler.
+ *
+ * </p>
  */
 public class BaseDiet {
     public Fillen.Diet diet = new Fillen.Diet() {
@@ -72,7 +107,7 @@ public class BaseDiet {
                     }else {
                         Object obj = callback(ingredients.setType(gen.get(i)));
                         // list Rules
-                        if (obj.getClass().isAssignableFrom(FillenList.class)) {
+                        if (obj != null && obj.getClass().isAssignableFrom(FillenList.class)) {
                             FillenList<Object> userList = (FillenList) obj;
                             last.addAll(userList.getList());
                         }else {
@@ -117,14 +152,13 @@ public class BaseDiet {
                 }
 
                 return result;
-            }else {
-                return null;
             }
+                return null;
         }
     };
 
     public Object arrayRules(Object fromCallback, Class<?> targetType) {
-        if (fromCallback.getClass().isAssignableFrom(FillenList.class)) {
+        if (fromCallback != null && fromCallback.getClass().isAssignableFrom(FillenList.class)) {
             List<Object> values = ((FillenList)fromCallback).getList();
 
             Object finals = Array.newInstance(targetType, values.size());

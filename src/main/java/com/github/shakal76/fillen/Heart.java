@@ -29,13 +29,13 @@ package com.github.shakal76.fillen;
 
 import com.github.shakal76.fillen.enums.Priority;
 import com.github.shakal76.fillen.exception.BadLootException;
+import com.github.shakal76.fillen.exception.IgnoreFieldNotFoundException;
+import com.github.shakal76.fillen.exception.SetFieldNotFoundException;
 import com.github.shakal76.fillen.utils.FillenList;
 import com.github.shakal76.fillen.utils.Generic;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Collection;
-import java.util.Map;
 
 /**
  * <h3>This class chew the heart of the whole application</h3>
@@ -55,10 +55,14 @@ import java.util.Map;
  *         <li>creating an object - there must be a default constructor</li>
  *         <li>search for fields that should have a specific value (from the setFiled method)</li>
  *         <li>if the fields should not be initialized, then call custom type handlers</li>
+ *         <li>checks the received value from user handlers for the FillenList type - if it is, then takes the first value and assigns it to the field</li>
  *         <li>set the value of the corresponding field</li>
  *     </ul>
  * </p>
  */
+// TODO: add exception to setField
+// TODO: add info about setters into readme and javadoc here
+// TODO: create more effective method to get Setter name from Fieldname
 class Heart {
     /**
      * <p>This is the central method of this project, that fill your class's fields</p>
@@ -75,20 +79,26 @@ class Heart {
         try {
             invoked = type.getConstructor().newInstance();
         }catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
-            throw new BadLootException("I cant find default constructor in " + type.getName() + "\n" + e.getMessage());
+            throw new BadLootException("I cant find default constructor in `" + type.getName() + "`\n" + e.getMessage());
         }
 
+        int settingCounter = 0;
+        int ignoreCounter = 0;
         for (Field field : type.getDeclaredFields()) {
-            field.setAccessible(true);
-            String filedName = field.getName();
-            if (context.settinglist.containsKey(filedName)) {
+            String setterName = "set" + field.getName().toUpperCase().charAt(0) + field.getName().substring(1);
+
+            if (context.settinglist.containsKey(field.getName())) {
+
+                settingCounter+=1;
+
                 try {
-                    field.set(invoked, context.settinglist.get(filedName));
-                }catch (IllegalAccessException e) {
-                    throw new BadLootException("I cant set value into field: " + field.getName() +
-                            ";\nin class: " + type + "\n" + e.getMessage());
+                    type.getDeclaredMethod(setterName, field.getType()).invoke(invoked, context.settinglist.get(field.getName()));
+                }catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                    throw new BadLootException("I cant set value into through the setter of field `" + field.getName() +
+                            "` in class " + type + "\n" + e.getMessage());
                 }
-            }else if (! context.ignoringlist.contains(filedName)) {
+            }else if (! context.ignoringlist.contains(field.getName())) {
+
                 try {
                     Object result = null;
 
@@ -105,22 +115,48 @@ class Heart {
                             if (diet.getPriority().equals(Priority.HIGH)) break;
                         }
                     }
-                    // TODO: add info about it into javadoc
-                    if (result != null) {
-                        if (result.getClass().isAssignableFrom(FillenList.class)) {
-                            FillenList list = (FillenList) result;
-                            result = list.getList().get(0);
-                        }
+                    if (result != null && result.getClass().isAssignableFrom(FillenList.class)) {
+                        FillenList list = (FillenList) result;
+                        result = list.getList().get(0);
                     }
-                    field.set(invoked, result);
-                }catch (IllegalAccessException e) {
-                    throw new BadLootException("I cant set value into field: " + field.getName() +
-                            ";\nin class: " + type + "\n" + e.getMessage());
+                    type.getDeclaredMethod(setterName, field.getType()).invoke(invoked, result);
+                }catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                    throw new BadLootException("I cant set value through the setter of field `" + field.getName() +
+                            "` in class " + type + "\n" + e.getMessage());
+                }
+            }else {
+                ignoreCounter+=1;
+            }
+        }
+        
+        // SettingCheck
+        if (settingCounter != context.settinglist.size()) {
+            for (String name : context.settinglist.keySet()) {
+                int smallCounter = 0;
+                for (Field field : type.getDeclaredFields()) {
+                    if (context.settinglist.containsKey(field.getName())) {
+                        smallCounter++;
+                    }
+                }
+                if (smallCounter == 0) {
+                    throw new SetFieldNotFoundException("Field `" + name + "` not found in class " + type);
                 }
             }
-            field.setAccessible(false);
         }
-
+        // IngoreCheck
+        if (ignoreCounter != context.ignoringlist.size()) {
+            for (String fieldName : context.ignoringlist) {
+                int smallCounter = 0;
+                for (Field field : type.getDeclaredFields()) {
+                    if (field.getName() == fieldName) {
+                        smallCounter++;
+                    }
+                }
+                if (smallCounter == 0) {
+                    throw new IgnoreFieldNotFoundException("Field `" + fieldName + "` not found in class " + type);
+                }
+            }
+        }
         return invoked;
     }
 }

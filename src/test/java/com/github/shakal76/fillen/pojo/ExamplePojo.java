@@ -31,4 +31,21 @@ public class ExamplePojo {
     public BigDecimal getDecimal() {
         return decimal;
     }
+
+
+    public void setText(String[][][][][] text) {
+        this.text = text;
+    }
+
+    public void setNumber(Integer number) {
+        this.number = number;
+    }
+
+    public void setList(List<List<Other>> list) {
+        this.list = list;
+    }
+
+    public void setDecimal(BigDecimal decimal) {
+        this.decimal = decimal;
+    }
 }

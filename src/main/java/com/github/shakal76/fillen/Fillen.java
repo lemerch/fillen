@@ -51,7 +51,7 @@ import java.util.*;
  *  <blockquote><pre>{@code abstract static class Fillen.Diet; }</pre></blockquote>
  *
  *  With it, you can process your new types or redefine the logic of filling in existing ones.
- *  For more information, see {@link Fillen.Diet}
+ *  For more information, see {@link Diet}
  * </p>
  *
  * <p></p>
@@ -61,7 +61,7 @@ import java.util.*;
  *  <ul>
  *      <li>CONFIGURE - this block is a group of constructors that accept
  *      {@link Bag}
- *      or it component {@link Fillen.Diet}</li>
+ *      or it component {@link Diet}</li>
  *
  *      <li>INTERMEDIATE HANDLERS - this block consists of 2 methods:
  *          <blockquote><pre>{@code ingoreFields(String... fields)}</pre></blockquote>
@@ -73,7 +73,7 @@ import java.util.*;
  *      BUT. before calling {@code Heart.dinner(...))} he should provide everyone with a {@code Fillen.Diet} in {@code context.bag} this very context</li>
  *
  *      <li>UTILS - it consists of one {@code abstract static class Fillen.Diet; }, but despite this, it is no less important especially for users
- *      For more information about this class read here {@link Fillen.Diet}</li>
+ *      For more information about this class read here {@link Diet}</li>
  *  </ul>
  * </p>
  */
@@ -86,7 +86,7 @@ public class Fillen {
     public Fillen(Bag bag) {
         this.context.bag = bag;
     }
-    public Fillen(Fillen.Diet... diets) {
+    public Fillen(Diet... diets) {
         for (Diet diet : diets) {
             this.context.bag.put(diet);
         }
@@ -107,7 +107,7 @@ public class Fillen {
 
 
     public<T> T dinner(Class<T> type) throws BadLootException {
-        for (Fillen.Diet diet : this.context.bag.get()) {
+        for (Diet diet : this.context.bag.get()) {
             diet.context = this.context;
         }
         return Heart.dinner(type, this.context);
@@ -193,7 +193,7 @@ public class Fillen {
                 throw new UserDietException("haven't context");
             }
             Object result = null;
-            for (Fillen.Diet diet : context.bag.get()) {
+            for (Diet diet : context.bag.get()) {
                 Object timed = diet.menu(ingredients);
                 if (timed != null) {
                     result = timed;
