@@ -1,7 +1,7 @@
 package com.github.shakal76.fillen.pojo;
 
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.*;
 
 /**
  * GETTERS AND SETTERS NOT REQUIRED
@@ -11,7 +11,7 @@ public class ExamplePojo {
     private String[][][][][] text;
     private Integer number;
 
-    private List<List<Other>> list;
+    private ArrayList<LinkedList<Other>> list;
 
     private BigDecimal decimal;
 
@@ -24,14 +24,13 @@ public class ExamplePojo {
         return number;
     }
 
-    public List<List<Other>> getList() {
+    public ArrayList<LinkedList<Other>> getList() {
         return list;
     }
 
     public BigDecimal getDecimal() {
         return decimal;
     }
-
 
     public void setText(String[][][][][] text) {
         this.text = text;
@@ -41,7 +40,7 @@ public class ExamplePojo {
         this.number = number;
     }
 
-    public void setList(List<List<Other>> list) {
+    public void setList(ArrayList<LinkedList<Other>> list) {
         this.list = list;
     }
 

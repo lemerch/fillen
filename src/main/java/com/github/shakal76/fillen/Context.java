@@ -47,4 +47,7 @@ public class Context {
     public Map<String, Object> settinglist = new HashMap<>();
     public Bag bag = new Bag();
 
+    public int settingCounter = 0;
+    public int ignoreCounter = 0;
+
 }

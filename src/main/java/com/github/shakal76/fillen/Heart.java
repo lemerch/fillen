@@ -64,6 +64,8 @@ import java.lang.reflect.InvocationTargetException;
 // TODO: add info about setters into readme and javadoc here
 // TODO: create more effective method to get Setter name from Fieldname
 class Heart {
+
+
     /**
      * <p>This is the central method of this project, that fill your class's fields</p>
      * @param type class that need to fill
@@ -82,14 +84,13 @@ class Heart {
             throw new BadLootException("I cant find default constructor in `" + type.getName() + "`\n" + e.getMessage());
         }
 
-        int settingCounter = 0;
-        int ignoreCounter = 0;
+
         for (Field field : type.getDeclaredFields()) {
             String setterName = "set" + field.getName().toUpperCase().charAt(0) + field.getName().substring(1);
 
             if (context.settinglist.containsKey(field.getName())) {
 
-                settingCounter+=1;
+                context.settingCounter+=1;
 
                 try {
                     type.getDeclaredMethod(setterName, field.getType()).invoke(invoked, context.settinglist.get(field.getName()));
@@ -111,26 +112,32 @@ class Heart {
                     for (Fillen.Diet diet : context.bag.get()) {
                         Object timed = diet.menu(ingredients);
                         if (timed != null) {
-                            result = timed;
+                            if (timed.getClass().isAssignableFrom(FillenList.class)) {
+                                result = diet.fillenListHandler((FillenList) timed);
+                            }else {
+                                result = timed;
+                            }
                             if (diet.getPriority().equals(Priority.HIGH)) break;
                         }
-                    }
-                    if (result != null && result.getClass().isAssignableFrom(FillenList.class)) {
-                        FillenList list = (FillenList) result;
-                        result = list.getList().get(0);
                     }
                     type.getDeclaredMethod(setterName, field.getType()).invoke(invoked, result);
                 }catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
                     throw new BadLootException("I cant set value through the setter of field `" + field.getName() +
                             "` in class " + type + "\n" + e.getMessage());
+                }catch (IllegalArgumentException e) {
+                    throw new BadLootException("Incorrect type of result in field `" + field.getName() +
+                            "` in class " + type + "\n" + e.getMessage());
                 }
             }else {
-                ignoreCounter+=1;
+                context.ignoreCounter+=1;
             }
         }
-        
+        return invoked;
+    }
+
+    public static void restChecker(Class<?> type, Context context) throws BadLootException {
         // SettingCheck
-        if (settingCounter != context.settinglist.size()) {
+        if (context.settingCounter != context.settinglist.size()) {
             for (String name : context.settinglist.keySet()) {
                 int smallCounter = 0;
                 for (Field field : type.getDeclaredFields()) {
@@ -144,7 +151,7 @@ class Heart {
             }
         }
         // IngoreCheck
-        if (ignoreCounter != context.ignoringlist.size()) {
+        if (context.ignoreCounter != context.ignoringlist.size()) {
             for (String fieldName : context.ignoringlist) {
                 int smallCounter = 0;
                 for (Field field : type.getDeclaredFields()) {
@@ -157,6 +164,5 @@ class Heart {
                 }
             }
         }
-        return invoked;
     }
 }

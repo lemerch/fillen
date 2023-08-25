@@ -68,6 +68,8 @@ class Flight {
         for (Fillen.Diet diet : this.context.bag.get()) {
             diet.context = this.context;
         }
-        return Heart.dinner(type, context);
+        T obj = Heart.dinner(type, this.context);
+        Heart.restChecker(type, this.context);
+        return obj;
     }
 }

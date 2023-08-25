@@ -29,10 +29,13 @@ package com.github.shakal76.fillen.base;
 
 import com.github.shakal76.fillen.Fillen;
 import com.github.shakal76.fillen.Ingredients;
+import com.github.shakal76.fillen.exception.BadLootException;
 import com.github.shakal76.fillen.exception.UserDietException;
 import com.github.shakal76.fillen.utils.FillenList;
 
+import javax.print.DocFlavor;
 import java.lang.reflect.Array;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 /**
@@ -91,32 +94,6 @@ public class BaseDiet {
                 return 5 + (float)(Math.random() * ((10 - 5) + 1));
             }else if(isTypesEquals(ingredients.type, double.class) || isTypesEquals(ingredients.type, Double.class)) {
                 return 5 + (Math.random() * ((10 - 5) + 1));
-            }else if(isTypesEquals(ingredients.type, List.class)) {
-                List<Object> result = new ArrayList<>();
-
-                List<Class<?>> gen = ingredients.generic.get();
-                List<Object> last = new ArrayList<>();
-                for (int i = 0; i < gen.size(); i++) {
-                    if (gen.get(i).isAssignableFrom(List.class)) {
-                        if (i == 0) {
-                            result.add(last);
-                        }else {
-                            List<Object> temp = new ArrayList<>();
-                            last.add(temp);
-                        }
-                    }else {
-                        Object obj = callback(ingredients.setType(gen.get(i)));
-                        // list Rules
-                        if (obj != null && obj.getClass().isAssignableFrom(FillenList.class)) {
-                            FillenList<Object> userList = (FillenList) obj;
-                            last.addAll(userList.getList());
-                        }else {
-                            last.add(obj);
-                        }
-                    }
-                }
-
-                return result;
             }else if(ingredients.type.isArray()) {
 
                 // WARNING FOR DEVELOPERS:
@@ -152,8 +129,38 @@ public class BaseDiet {
                 }
 
                 return result;
+            }else {
+                List<Object> aninter = Arrays.asList(ingredients.type.getInterfaces());
+                if (aninter.contains(List.class) || aninter.contains(Set.class) || aninter.contains(Queue.class)) {
+                    Collection result = collectionGenerate(ingredients.type);
+
+                    List<Class<?>> gen = ingredients.generic.get();
+                    Collection last = collectionGenerate(ingredients.type);
+                    for (int i = 0; i < gen.size(); i++) {
+                        List<Object> innerInter = Arrays.asList(gen.get(i).getInterfaces());
+                        if (innerInter.contains(List.class) || innerInter.contains(Set.class) || innerInter.contains(Queue.class)) {
+                            if (i == 0) {
+                                result.add(last);
+                            } else {
+                                Collection temp = collectionGenerate(ingredients.type);
+                                last.add(temp);
+                            }
+                        } else {
+                            Object obj = callback(ingredients.setType(gen.get(i)));
+                            // list Rules
+                            if (obj != null && obj.getClass().isAssignableFrom(FillenList.class)) {
+                                FillenList<Object> userList = (FillenList) obj;
+                                last.addAll(userList.getList());
+                            } else {
+                                last.add(obj);
+                            }
+                        }
+                    }
+
+                    return result;
+                }
             }
-                return null;
+            return null;
         }
     };
 
@@ -173,4 +180,38 @@ public class BaseDiet {
             return finals;
         }
     }
+    public Collection collectionGenerate(Class<?> type) throws UserDietException {
+        try {
+            return (Collection) type.getConstructor().newInstance();
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            throw new UserDietException(e.getMessage());
+        }
+    }
 }
+/*
+List<Object> result = new ArrayList<>();
+
+                List<Class<?>> gen = ingredients.generic.get();
+                List<Object> last = new ArrayList<>();
+                for (int i = 0; i < gen.size(); i++) {
+                    if (gen.get(i).isAssignableFrom(List.class)) {
+                        if (i == 0) {
+                            result.add(last);
+                        }else {
+                            List<Object> temp = new ArrayList<>();
+                            last.add(temp);
+                        }
+                    }else {
+                        Object obj = callback(ingredients.setType(gen.get(i)));
+                        // list Rules
+                        if (obj != null && obj.getClass().isAssignableFrom(FillenList.class)) {
+                            FillenList<Object> userList = (FillenList) obj;
+                            last.addAll(userList.getList());
+                        }else {
+                            last.add(obj);
+                        }
+                    }
+                }
+
+                return result;
+ */

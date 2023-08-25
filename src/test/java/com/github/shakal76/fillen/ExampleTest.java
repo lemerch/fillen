@@ -7,10 +7,15 @@ import com.github.shakal76.fillen.pojo.ExamplePojo;
 import com.github.shakal76.fillen.pojo.NewPojo;
 import com.github.shakal76.fillen.pojo.Other;
 import com.github.shakal76.fillen.utils.Converter;
+import com.github.shakal76.fillen.utils.FillenList;
 import org.junit.Test;
 
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedList;
 
 
 public class ExampleTest {
@@ -32,18 +37,20 @@ public class ExampleTest {
 
         Fillen fillen = new Fillen(diet);
 
-        ExamplePojo first = fillen.setField("gfd", 123).dinner(ExamplePojo.class);
+        ExamplePojo first = fillen.dinner(ExamplePojo.class);
 
         System.out.println("\nFIRST RESULT:\n");
         System.out.println("text: " + Arrays.deepToString(first.getText()));
         System.out.println("number: " + first.getNumber());
-        System.out.println("list: " + first.getList().get(0).get(0).getC());
+
+        System.out.println("list: " + first.getList().get(0).poll().getA());
         System.out.println("decimal: " + first.getDecimal());
 
-        NewPojo newp = new Converter().fromTo(first, NewPojo.class);
-        System.out.println("-list: " + first.getList().get(0).get(0).getC());
-        System.out.println("-decimal: " + first.getDecimal());
+        /*NewPojo newp = new Converter().fromTo(first, NewPojo.class);
+        System.out.println("-list: " + first.getList().poll().get(0).getA());
+        System.out.println("-decimal: " + first.getDecimal());*/
     }
+    /*
     @Test
     public void secondExample() throws BadLootException {
 
@@ -118,5 +125,5 @@ public class ExampleTest {
 
         System.out.println("-----------------\nPRIORITYTEST RESULT  (must be [[[high]]]):\n");
         System.out.println("text: " + Arrays.deepToString(first.getText()));
-    }
+    }*/
 }

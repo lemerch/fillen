@@ -30,6 +30,7 @@ package com.github.shakal76.fillen;
 import com.github.shakal76.fillen.enums.Priority;
 import com.github.shakal76.fillen.exception.BadLootException;
 import com.github.shakal76.fillen.exception.UserDietException;
+import com.github.shakal76.fillen.utils.FillenList;
 
 import java.util.*;
 
@@ -110,7 +111,9 @@ public class Fillen {
         for (Diet diet : this.context.bag.get()) {
             diet.context = this.context;
         }
-        return Heart.dinner(type, this.context);
+        T obj = Heart.dinner(type, this.context);
+        Heart.restChecker(type, this.context);
+        return obj;
     }
 
     // UTILS
@@ -196,7 +199,11 @@ public class Fillen {
             for (Diet diet : context.bag.get()) {
                 Object timed = diet.menu(ingredients);
                 if (timed != null) {
-                    result = timed;
+                    if (timed.getClass().isAssignableFrom(FillenList.class)) {
+                        result = diet.fillenListHandler((FillenList) timed);
+                    }else {
+                        result = timed;
+                    }
                     if (diet.getPriority().equals(Priority.HIGH)) break;
                 }
             }
@@ -233,6 +240,11 @@ public class Fillen {
         // TARGET
         public abstract Object menu(Ingredients ingredients) throws UserDietException;
 
+        // called when heart take a fillenlist to set field
+        // can be modified
+        public Object fillenListHandler(FillenList list) throws UserDietException {
+            return list.getList().get(0);
+        }
     }
 
 }

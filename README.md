@@ -184,12 +184,14 @@ _______________
 
 # TODO:
 
-- ADD CONVERTER and info about it into readme
-- Improve image quality
-- Check text of readme
+- ! DELETE DINNER METHOD FROM FILLEN.DIET 
+- add info about setters + javadoc
+- CONVERTER - readme, info, security + javadoc
 - add to readme - userdietexception
 - add commit rules
-- add javadoc to BaseDiet, Generic, Heart
 - add diagram of architype
+
+- Improve image quality
+- Check text of readme
 
 Filins color - #53F4CC

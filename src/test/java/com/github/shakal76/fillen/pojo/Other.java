@@ -29,4 +29,9 @@ public class Other {
     public void setC(double c) {
         this.c = c;
     }
+
+    @Override
+    public String toString() {
+        return "c: " + c;
+    }
 }
