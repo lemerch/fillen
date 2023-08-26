@@ -32,16 +32,23 @@ import com.github.shakal76.fillen.utils.Generic;
 import java.lang.annotation.Annotation;
 
 /**
- * <p>This class is a simple IMMUTABLE container for transport information about field that Heart.dinner want to fill into Fillen.Diet.menu(...)</p>
+ * <h3>This class is a simple IMMUTABLE container for transport information about field that Heart.dinner want to fill into Fillen.Diet.menu(...)</h3>
  *
- * <p>It contains:</p>
- * <ul>
+ * <p>It contains:
+ *  <ul>
  *     <li>field type</li>
  *     <li>field name</li>
  *     <li>field generic</li>
  *     <li>field declaredAnnotation</li>
  *     <li>field modifier</li>
- * </ul>
+ *  </ul>
+ * </p>
+ *
+ * <p>
+ *     Its peculiarity lies in the fact that its fields are public,
+ *     but they are not changeable,
+ *     since each setter creates a new object - this is done for the convenience and security of user handlers in {@link Fillen.Diet}
+ * </p>
  */
 public class Ingredients {
     public final Class<?> type;

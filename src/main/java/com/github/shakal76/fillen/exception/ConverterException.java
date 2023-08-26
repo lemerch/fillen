@@ -25,28 +25,8 @@
  *  ⠠⠤⣉⣁⣢⣄⣀⣀⣤⣿⠷⠦⠤⣠⡶⠿⣟⠀⠀⠀⠀⠻⡀⠀
  * ⠀⠀⠔⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠃⠃⠉⠉⠛⠛⠿⢷⡶⠀
  */
-package com.github.shakal76.fillen;
+package com.github.shakal76.fillen.exception;
 
-import com.github.shakal76.fillen.base.BaseDiet;
-
-import java.util.ArrayList;
-import java.util.List;
-
-/**
- * <h3>Bag is a simple container for {@link Fillen.Diet} objects</h3>
- * <p>Its peculiarity is that it adds a basic type handler to its "bag".</p>
- */
-public class Bag {
-    private List<Fillen.Diet> bag = new ArrayList<>();
-
-    public Bag() {
-        this.bag.add(new BaseDiet().diet);
-    }
-    public void put(Fillen.Diet userType) {
-        this.bag.add(userType);
-    }
-    public List<Fillen.Diet> get() {
-        return this.bag;
-    }
-    public void set(Bag bag) { this.bag.addAll(bag.get()); }
+public class ConverterException extends BadLootException {
+    public ConverterException(String message) {super(message);}
 }

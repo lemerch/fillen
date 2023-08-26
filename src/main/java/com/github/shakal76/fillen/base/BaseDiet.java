@@ -30,19 +30,56 @@ package com.github.shakal76.fillen.base;
 import com.github.shakal76.fillen.Fillen;
 import com.github.shakal76.fillen.Ingredients;
 import com.github.shakal76.fillen.exception.BadLootException;
+import com.github.shakal76.fillen.exception.UserDietException;
+import com.github.shakal76.fillen.utils.FillenList;
 
+import javax.print.DocFlavor;
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
 
-// TODO: make list as array handler
-// TODO: make ContainerBehaviour class that will be defined filling of List,Set,Map,Arrays behaviour
-// NOW LIST IS NOT WORK BECAUSE OF diet.menu(...)
+/**
+ * <h3>BaseDiet is a diet to support basic data types</h3>
+ * <p>
+ *  This is a standard diet for our owl, its essence is to support the following types:
+ *  <ul>
+ *      <li>String</li>
+ *      <li>byte</li>
+ *      <li>short</li>
+ *      <li>int</li>
+ *      <li>long</li>
+ *      <li>float</li>
+ *      <li>double</li>
+ *      <li>List</li>
+ *      <li>arrays</li>
+ *  </ul>
+ *  the value of which is random, except list and array.
+ *  List and array work according to the following logic:
+ *  if it is a container, then we find out the nesting and generate it until we reach the final type,
+ *  and then we check whether it is a {@link FillenList},
+ *  if so, then we take all its elements and put them in their last list,
+ *  otherwise just the container value in the last container.
+ *
+ *  To simplify such logic, there is a {@link com.github.shakal76.fillen.utils.Generic} class for working with generic types, which you can iteratively go through.
+ *
+ *  And for simple arrays there is a built-in method in {@link Fillen.Diet} - getListArray - which also converts a sequence of arrays into a list,
+ *  which will also be convenient for iterating and creating similar logic.
+ * </p>
+ *
+ * <p></p>
+ *
+ * <h4>NOTICE</h4>
+ * <p>
+ *  the last element of the resulting list from the getListArray method is the final type, however,
+ *  if you create primitive arrays through reflection, then keep in mind that a new class must also be created for this last element.
+ *  See the implementation example before making your own container handler.
+ *
+ * </p>
+ */
 public class BaseDiet {
     public Fillen.Diet diet = new Fillen.Diet() {
         @Override
-        public Object menu(Ingredients ingredients) throws BadLootException {
+        public Object menu(Ingredients ingredients) throws UserDietException {
             if(isTypesEquals(ingredients.type, String.class)) {
                 return UUID.randomUUID().toString().replaceAll("-", "");
             }else if(isTypesEquals(ingredients.type, byte.class) || isTypesEquals(ingredients.type, Byte.class)) {
@@ -57,82 +94,124 @@ public class BaseDiet {
                 return 5 + (float)(Math.random() * ((10 - 5) + 1));
             }else if(isTypesEquals(ingredients.type, double.class) || isTypesEquals(ingredients.type, Double.class)) {
                 return 5 + (Math.random() * ((10 - 5) + 1));
-            }else if(isTypesEquals(ingredients.type, List.class)) {
-                List<Object> obj = new ArrayList<>();
-                Ingredients newIngredients = ingredients
-                            .setType(ingredients.generic.getFirst()).setGeneric(ingredients.generic.removeFirst());
-
-
-                Object result = callback(newIngredients);
-
-                obj.add(result);
-                return obj;
             }else if(ingredients.type.isArray()) {
+
+                // WARNING FOR DEVELOPERS:
+                //                         LAST CELL OF getListArray's LIST
+                //                         WILL BE SEEM AS SIMPLE TYPE, BUT YOU MUST CREATE NEW ARRAY INSTANCE FOR IT
                 List<Class<?>> list = getListArray(ingredients.type);
-                Class<?> newType = list.get(list.size()-1);
-                Ingredients newIngredients = new Ingredients(
-                        newType, newType.getName(), null,
-                        newType.getDeclaredAnnotations(),
-                        newType.getModifiers()
-                );
-                Object result = callback(newIngredients);
 
-                Object array = null;
-                if (list.size() > 2) {
-                    array = Array.newInstance(ingredients.type.getComponentType(), 1);
-                    Object[] info = handling(array, ingredients.type.getComponentType());
+                Object obj = callback(ingredients.setType(list.get(list.size()-1)));
 
-                    if (result.getClass().isAssignableFrom(ArrayList.class)) {
-                        List<?> userlist = (List<?>) result;
-                        Object finalArray = Array.newInstance((Class<?>) info[1], userlist.size());
-                        Array.set(info[0], 0, finalArray);
-                        int i = 0;
-                        for (Object o : userlist) {
-                            Array.set(finalArray, i, o);
-                            i++;
-                        }
-                        result = array;
-                    } else {
-                        Object finalArray = Array.newInstance((Class<?>) info[1], 1);
-                        Array.set(info[0], 0, finalArray);
-                        Array.set(finalArray, 0, result);
-                        result = array;
-                    }
+                Object result = null;
+                if (list.size() == 1) {
+                    result = arrayRules(obj, list.get(list.size()-1));
+                }else if(list.size() == 2) {
+                    Object temp = Array.newInstance(list.get(0), 1);
+                    Object last = arrayRules(obj, list.get(list.size()-1));
+                    Array.set(temp, 0, last);
+                    result = temp;
                 }else {
-                    if (result.getClass().isAssignableFrom(ArrayList.class)) {
-                        List<?> userlist = (List<?>) result;
-                        array = Array.newInstance(list.get(1), userlist.size());
-                        int i = 0;
-                        for (Object o : userlist) {
-                            Array.set(array, i, o);
-                            i++;
+                    Object root = Array.newInstance(list.get(0), 1);
+                    Object previous = Array.newInstance(list.get(1), 1);
+                    for (int i = 1; i < list.size()-1; i++) {
+                        if (i == 1) {
+                            Array.set(root, 0, previous);
+                        }else {
+                            Object temp = Array.newInstance(list.get(i), 1);
+                            Array.set(previous, 0, temp);
+                            previous = temp;
                         }
-                        result = array;
-                    } else {
-                        array = Array.newInstance(list.get(1), 1);
-                        Array.set(array, 0, result);
-                        result = array;
                     }
+                    Object last = arrayRules(obj, list.get(list.size()-1));
+                    Array.set(previous, 0, last);
+                    result = root;
                 }
 
                 return result;
             }else {
-                return null;
+                List<Object> aninter = Arrays.asList(ingredients.type.getInterfaces());
+                if (aninter.contains(List.class) || aninter.contains(Set.class) || aninter.contains(Queue.class)) {
+                    Collection result = collectionGenerate(ingredients.type);
+
+                    List<Class<?>> gen = ingredients.generic.get();
+                    Collection last = collectionGenerate(ingredients.type);
+                    for (int i = 0; i < gen.size(); i++) {
+                        List<Object> innerInter = Arrays.asList(gen.get(i).getInterfaces());
+                        if (innerInter.contains(List.class) || innerInter.contains(Set.class) || innerInter.contains(Queue.class)) {
+                            if (i == 0) {
+                                result.add(last);
+                            } else {
+                                Collection temp = collectionGenerate(ingredients.type);
+                                last.add(temp);
+                            }
+                        } else {
+                            Object obj = callback(ingredients.setType(gen.get(i)));
+                            // list Rules
+                            if (obj != null && obj.getClass().isAssignableFrom(FillenList.class)) {
+                                FillenList<Object> userList = (FillenList) obj;
+                                last.addAll(userList.getList());
+                            } else {
+                                last.add(obj);
+                            }
+                        }
+                    }
+
+                    return result;
+                }
             }
+            return null;
         }
     };
 
-    public static Object[] handling(Object array, Class<?> currentType) {
-        if (currentType.getComponentType().isArray()) {
-            Object timed = Array.newInstance(currentType.getComponentType(), 1);
-            currentType = currentType.getComponentType();
-            Array.set(array, 0, timed);
-            return handling(timed, currentType);
+    public Object arrayRules(Object fromCallback, Class<?> targetType) {
+        if (fromCallback != null && fromCallback.getClass().isAssignableFrom(FillenList.class)) {
+            List<Object> values = ((FillenList)fromCallback).getList();
+
+            Object finals = Array.newInstance(targetType, values.size());
+
+            for (int j = 0; j < values.size(); j++) {
+                Array.set(finals, j, values.get(j));
+            }
+            return finals;
         }else {
-            Object[] res = new Object[2];
-            res[0] = array;
-            res[1] = currentType.getComponentType();
-            return res;
+            Object finals = Array.newInstance(targetType, 1);
+            Array.set(finals, 0, fromCallback);
+            return finals;
+        }
+    }
+    public Collection collectionGenerate(Class<?> type) throws UserDietException {
+        try {
+            return (Collection) type.getConstructor().newInstance();
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            throw new UserDietException(e.getMessage());
         }
     }
 }
+/*
+List<Object> result = new ArrayList<>();
+
+                List<Class<?>> gen = ingredients.generic.get();
+                List<Object> last = new ArrayList<>();
+                for (int i = 0; i < gen.size(); i++) {
+                    if (gen.get(i).isAssignableFrom(List.class)) {
+                        if (i == 0) {
+                            result.add(last);
+                        }else {
+                            List<Object> temp = new ArrayList<>();
+                            last.add(temp);
+                        }
+                    }else {
+                        Object obj = callback(ingredients.setType(gen.get(i)));
+                        // list Rules
+                        if (obj != null && obj.getClass().isAssignableFrom(FillenList.class)) {
+                            FillenList<Object> userList = (FillenList) obj;
+                            last.addAll(userList.getList());
+                        }else {
+                            last.add(obj);
+                        }
+                    }
+                }
+
+                return result;
+ */
