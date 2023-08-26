@@ -1,4 +1,8 @@
 # REVIEW
+
+This branch have priority and other feture that stay on review
+
+
 <div align="center">
 <img alt="logo" height="150" src="static/logo.png" width="150"/>
 
