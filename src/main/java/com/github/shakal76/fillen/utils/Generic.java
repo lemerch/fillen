@@ -27,10 +27,7 @@
  */
 package com.github.shakal76.fillen.utils;
 
-import com.github.shakal76.fillen.exception.BadLootException;
-import com.github.shakal76.fillen.exception.service.specialized.HeartException;
 import com.github.shakal76.fillen.exception.user.GenericException;
-import com.github.shakal76.fillen.exception.user.UserDietException;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -40,7 +37,7 @@ import java.util.List;
 /**
  * <h3>Generic is a simple class for processing, iterating and conveniently storing data about a generic type</h3>
  * <p>
- *     This class consists essentially of a constructor and two simple methods.
+ *     This class consists essentially of a constructor and two simple methods: {@link Generic#get()}, {@link Generic#next()}.
  *     The main value here is a constructor that overwrites data about a generic type in a convenient form for subsequent processing.
  * </p>
  * <p>The constructor simply parses the value from type.getTypeName()</p>
@@ -63,7 +60,19 @@ public class Generic {
     private Generic(List<Class<?>> list) {
         this.generics = list;
     }
+
+    /**
+     * @return list of generic types
+     */
     public List<Class<?>> get() { return this.generics; }
+
+    /**
+     * This method create new Instance of {@link Generic}
+     * transfer current list to it without first element
+     *
+     * @return next iteration of Generic
+     * @throws GenericException when list size >= 1
+     */
     public Generic next() throws GenericException {
         if (this.generics.size() >= 1) {
             List<Class<?>> newlist = new ArrayList<>(this.generics.size());

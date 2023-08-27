@@ -28,6 +28,11 @@ Individual application examples can be viewed in the [tests](/src/test/java/com/
 
 Apache License Version 2.0
 
+## Examples
+
+[here](/src/main/test/com/github/shakal76/fillen/examples)
+
+
 # How it works?
 
 <img alt="first" height="50" src="static/1.png" width="50" style="display: inline;"/>  
@@ -245,7 +250,7 @@ public Object menu(Ingredients ingredients) throws UserDietException{
 }
 ```
 
-All collection implementations are processed here. But in addition to `seeback` method, there are a few more interesting points here. The first is a `Generic` object, with which you can handle generic types. It supports two models - **procedural** (do you just take `List<Class<?>>` through the `get` method and process) and **recursive** (the next method simply removes the first cell from the internal list)
+All collection implementations are processed here. But in addition to `seeback` method, there are a few more interesting points here. The first is a `Generic` object, with which you can handle generic types. It supports two models - **procedural** (do you just take `List<Class<?>>` through the `get` method and process) | for arrays use ingredients.type.getComponentType and **recursive** (the next method simply removes the first cell from the internal list)
 
 The second very important thing that I ask you to pay attention to is the `FillenList` type. If you use this type in the class that you will process, the `dinner` method will return an exception to you. This type is needed just for processing in containers. Any `diet` can create this list if it has several candidates for the result. If such a list is not processed in another handler, then Fillen will take only the **first** element from it.
 

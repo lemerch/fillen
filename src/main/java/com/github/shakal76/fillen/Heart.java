@@ -31,7 +31,6 @@ import com.github.shakal76.fillen.exception.BadLootException;
 import com.github.shakal76.fillen.exception.service.logical.IgnoreFieldNotFoundException;
 import com.github.shakal76.fillen.exception.service.logical.SetFieldNotFoundException;
 import com.github.shakal76.fillen.exception.service.specialized.HeartException;
-import com.github.shakal76.fillen.exception.user.GenericException;
 import com.github.shakal76.fillen.exception.user.UserDietException;
 import com.github.shakal76.fillen.utils.FillenList;
 import com.github.shakal76.fillen.utils.Generic;
@@ -44,32 +43,41 @@ import java.lang.reflect.InvocationTargetException;
  * <h3>This class chew the heart of the whole application</h3>
  *
  * <p>
- *     This class contains only one method, but it performs the main function of this library.
- * </p>
- * <p>It takes the class type and context as input</p>
- * <p>
- *     At the output, it returns an already filled object.
- * This method guarantees that all fields will be filled, i.e. in extreme cases you will get null,
- * if it should not be ignored - {@link Flight}
- * </p>
- * <p>
- *     The whole process of work can be decomposed into:
- *     <ul>
- *         <li>creating an object - there must be a default constructor</li>
- *         <li>search for fields that should have a specific value (from the setFiled method)</li>
- *         <li>if the fields should not be initialized, then call custom type handlers</li>
- *         <li>checks the received value from user handlers for the FillenList type - if it is, then takes the first value and assigns it to the field</li>
- *         <li>set the value of the corresponding field</li>
- *     </ul>
+ *     This class essentially consists of two methods {@link Heart#dinner(Class, Context)} and {@link Heart#restedChecker(Class, Context)}
  * </p>
  */
 class Heart {
 
 
     /**
-     * <p>This is the central method of this project, that fill your class's fields</p>
+     * <p>
+     *     The whole process of work can be decomposed into:
+     *     <ul>
+     *         <li>creating an object - there must be a default constructor</li>
+     *         <li>search for fields that should have a specific value (from the setFiled method)</li>
+     *         <li>if the fields should not be initialized, then call custom type handlers</li>
+     *         <li>checks the received value from user handlers for the {@link FillenList} type - if it is, then takes the first value and assigns it to the field</li>
+     *         <li>set the value of the corresponding field</li>
+     *     </ul>
+     * </p>
+     * <p>It takes the class type and context as input</p>
+     *
+     * <p>
+     *     At the output, it returns an already filled object.
+     * This method guarantees that all fields will be filled, i.e. in extreme cases you will get null,
+     * if it should not be ignored - {@link Flight}
+     * </p>
+     *
+     * <p>to implement his work, he uses auxiliary methods
+     * <ul>
+     *     <li>{@link Heart#create(Class)}</li>
+     *     <li>{@link Heart#set(Class, String, Field, Object, Object)}</li>
+     *     <li>{@link Heart#handle(Field, Bag)}</li>
+     *     <li>{@link Heart#formatSetter(String)}</li>
+     * </ul>
+     * </p>
      * @param type class that need to fill
-     * @param context type that allowed this method get {@code ignorelist, settinglist and bag}
+     * @param context type that allowed this method get {@link Flight#ignore(String...)}, {@link Flight#set(String, Object)} and {@link Bag}}
      * @return type that you send in @param type
      * @param <T> filled class that was selected in @param type
      * @throws BadLootException as common exception
@@ -96,6 +104,15 @@ class Heart {
         }
         return invoked;
     }
+
+    /**
+     * This method creates a class object via the default constructor
+     *
+     * @param type
+     * @return invoked class -> object
+     * @param <T>
+     * @throws HeartException
+     */
     private static<T> T create(Class<T> type) throws HeartException {
         try {
             return type.getConstructor().newInstance();
@@ -103,6 +120,20 @@ class Heart {
             throw new HeartException("I cant find default constructor in class `" + type.getName() + "`", e);
         }
     }
+
+    /**
+     *
+     * This method creates {@link Ingredients} based on field and passes
+     * it to {@link Fillen.Diet} the value of which he saves in case
+     * there are no later options not equal to null.
+     *
+     * If at the end of the crawl {@link Fillen.Diet} he gets {@link FillenList}, then he takes his first cell.
+     *
+     * @param field
+     * @param bag
+     * @return result of work {@link Fillen.Diet}
+     * @throws UserDietException
+     */
     private static Object handle(Field field, Bag bag) throws UserDietException {
         Object result = null;
 
@@ -123,6 +154,17 @@ class Heart {
         }
         return result;
     }
+
+    /**
+     * This method will try to set the value of the field through its setter.
+     *
+     * @param type
+     * @param setterName
+     * @param field
+     * @param invoked
+     * @param result
+     * @throws HeartException
+     */
     private static void set(Class<?> type, String setterName, Field field, Object invoked, Object result) throws HeartException {
         try {
             type.getDeclaredMethod(setterName, field.getType()).invoke(invoked, result);
@@ -135,10 +177,29 @@ class Heart {
         }
     }
 
+    /**
+     * This method simply converts the field name to its setter
+     * @param fieldName
+     * @return method name of setter
+     */
     private static String formatSetter(String fieldName) {
         return "set" + String.valueOf(fieldName.charAt(0)).toUpperCase() + fieldName.substring(1);
     }
 
+    /**
+     * This method will probably help many developers to avoid many mistakes.
+     * Because it will show you exactly where you made a mistake when assigning `set` or `ignore`.
+     *
+     * It checks from {@link Context} the correspondence of the passed fields according to the lists
+     * {@link Context#ignoringlist}, {@link Context#settinglist} with their total number (each separately).
+     *
+     * And in case of inconsistency, he will begin an investigation - which field was not in the class
+     *
+     * @param type
+     * @param context
+     * @throws BadLootException
+     */
+    // TODO: now it doesn't check inner user classes
     public static void restedChecker(Class<?> type, Context context) throws BadLootException {
         // SettingCheck
         if (context.settingCounter != context.settinglist.size()) {

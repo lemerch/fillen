@@ -37,8 +37,8 @@ import com.github.shakal76.fillen.exception.service.logical.SetOrIgnoreConflictE
  *  This class is not much different from Fillen,
  *  but it is through it that you can manipulate the methods:
  *  <ul>
- *      <li><blockquote><pre>{@code ignoreFields(String... fields)}</pre></blockquote></li>
- *      <li><blockquote><pre>{@code setField(String field, Object value)}</pre></blockquote></li>
+ *      <li>{@link Flight#ignore(String...)}</li>
+ *      <li>{@link Flight#set(String, Object)}</li>
  *  </ul>
  *
  *  Why do we need a separate class for this? - The answer is mobility.
@@ -46,7 +46,7 @@ import com.github.shakal76.fillen.exception.service.logical.SetOrIgnoreConflictE
  *
  *  <p>
  *  You can make separate configurations with Flight with certain settings while having the same
- *  Fillen instance with its custom {@link Fillen.Diet} handlers
+ *  {@link Fillen} instance with its custom {@link Fillen.Diet} handlers
  * </p>
  */
 public class Flight {
@@ -55,16 +55,43 @@ public class Flight {
     Flight(Context context) {
         this.context = context;
     }
+
+    /**
+     * This method fills in the list {@link Context#ignoringlist}
+     *
+     * @param fieldNames
+     * @return its instance
+     */
     public Flight ignore(String... fieldNames) {
         for (String field : fieldNames) {
             this.context.ignoringlist.add(field);
         }
         return this;
     }
+
+    /**
+     * This method fills in the map {@link Context#settinglist}
+     *
+     * @param fieldName
+     * @param value
+     * @return its instance
+     * @param <T>
+     */
     public<T> Flight set(String fieldName, T value) {
         this.context.settinglist.put(fieldName, value);
         return this;
     }
+
+    /**
+     * Unlike {@link Fillen#dinner(Class)}, this method checks
+     * for matching field names between {@link Context#ignoringlist} and {@link Context#settinglist}
+     *
+     * @param type
+     * @return filled Object
+     * @param <T>
+     * @throws SetOrIgnoreConflictException when conflict between set and ignore exist
+     * @throws BadLootException
+     */
     public<T> T dinner(Class<T> type) throws BadLootException {
         for (String s : context.ignoringlist) {
             if (context.settinglist.containsKey(s)) {

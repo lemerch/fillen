@@ -33,46 +33,48 @@ import com.github.shakal76.fillen.exception.user.UserDietException;
 import com.github.shakal76.fillen.utils.FillenList;
 
 /**
- * <h3>BaseDiet is a diet to support basic data types</h3>
- * <p>
- *  This is a standard diet for our owl, its essence is to support the following types:
- *  <ul>
- *      <li>String</li>
- *      <li>byte</li>
- *      <li>short</li>
- *      <li>int</li>
- *      <li>long</li>
- *      <li>float</li>
- *      <li>double</li>
- *      <li>List</li>
- *      <li>arrays</li>
- *  </ul>
- *  the value of which is random, except list and array.
- *  List and array work according to the following logic:
- *  if it is a container, then we find out the nesting and generate it until we reach the final type,
- *  and then we check whether it is a {@link FillenList},
- *  if so, then we take all its elements and put them in their last list,
- *  otherwise just the container value in the last container.
- *
- *  To simplify such logic, there is a {@link com.github.shakal76.fillen.utils.Generic} class for working with generic types, which you can iteratively go through.
- *
- *  And for simple arrays there is a built-in method in {@link Fillen.Diet} - getListArray - which also converts a sequence of arrays into a list,
- *  which will also be convenient for iterating and creating similar logic.
- * </p>
- *
- * <p></p>
- *
- * <h4>NOTICE</h4>
- * <p>
- *  the last element of the resulting list from the getListArray method is the final type, however,
- *  if you create primitive arrays through reflection, then keep in mind that a new class must also be created for this last element.
- *  See the implementation example before making your own container handler.
- *
- * </p>
+ * This is simple wrapper class for it fied {@link api#base}
  */
-
-// base api
 public final class api {
+    /**
+     * <h3>basic.api is a connector of standard diets to support basic data types</h3>
+     * <p>It connect:
+     * <ul>
+     *     <li>{@link ArrayDiet}</li>
+     *     <li>{@link CollectionDiet}</li>
+     *     <li>{@link RandomDiet}</li>
+     * </ul>
+     * </p>
+     *
+     * <p>
+     *  its essence is to support the following types:
+     *  <ul>
+     *      <li>String</li>
+     *      <li>byte</li>
+     *      <li>short</li>
+     *      <li>int</li>
+     *      <li>long</li>
+     *      <li>float</li>
+     *      <li>double</li>
+     *
+     *      <li>List</li>
+     *      <li>Set</li>
+     *      <li>Queue</li>
+     *
+     *      <li>Collection Implementations</li>
+     *
+     *      <li>arrays</li>
+     *  </ul>
+     *  the value of which is random, except list and array.
+     *  Container types work according to the following logic:
+     *  if it is a container, then we find out the nesting and generate it until we reach the final type,
+     *  and then we check whether it is a {@link FillenList},
+     *  if so, then we take all its elements and put them in their last list,
+     *  otherwise just the container value in the last container.
+     *
+     *  To simplify such logic, there is a {@link com.github.shakal76.fillen.utils.Generic} class for working with generic types, which you can iteratively go through.
+     * </p>
+     */
     public static final Fillen.Diet base = new Fillen.Diet() {
         @Override
         public Object menu(Ingredients ingredients) throws UserDietException {
