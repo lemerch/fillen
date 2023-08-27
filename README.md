@@ -302,6 +302,7 @@ Well, the last thing I want to say here is exception handling - you can manipula
 # TODO:
 
 - add converter
+- examples
 - add threading tests
 
 Filins color - #53F4CC
