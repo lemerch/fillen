@@ -1,4 +1,6 @@
-package com.github.shakal76.fillen.pojo;
+package com.github.shakal76.fillen.examples.pojo;
+
+import com.github.shakal76.fillen.examples.pojo.Other;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -8,15 +10,15 @@ import java.util.*;
  */
 public class ExamplePojo {
 
-    private String[][][][][] text;
+    private String[] text;
     private Integer number;
 
-    private ArrayList<LinkedList<Other>> list;
+    private Queue<List<Other>> list;
 
     private BigDecimal decimal;
 
     ////////////////////////////////////////////
-    public String[][][][][] getText() {
+    public String[] getText() {
         return text;
     }
 
@@ -24,7 +26,7 @@ public class ExamplePojo {
         return number;
     }
 
-    public ArrayList<LinkedList<Other>> getList() {
+    public Queue<List<Other>> getList() {
         return list;
     }
 
@@ -32,7 +34,7 @@ public class ExamplePojo {
         return decimal;
     }
 
-    public void setText(String[][][][][] text) {
+    public void setText(String[] text) {
         this.text = text;
     }
 
@@ -40,7 +42,7 @@ public class ExamplePojo {
         this.number = number;
     }
 
-    public void setList(ArrayList<LinkedList<Other>> list) {
+    public void setList(Queue<List<Other>> list) {
         this.list = list;
     }
 

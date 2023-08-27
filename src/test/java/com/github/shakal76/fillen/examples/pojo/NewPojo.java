@@ -1,14 +1,16 @@
-package com.github.shakal76.fillen.pojo;
+package com.github.shakal76.fillen.examples.pojo;
+
+import com.github.shakal76.fillen.examples.pojo.Other;
 
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.ArrayList;
 
 public class NewPojo {
-    private List<List<Other>> list;
+    private ArrayList<Other> list;
 
     private BigDecimal decimal;
 
-    public List<List<Other>> getList() {
+    public ArrayList<Other> getList() {
         return list;
     }
 
@@ -16,7 +18,7 @@ public class NewPojo {
         return decimal;
     }
 
-    public void setList(List<List<Other>> list) {
+    public void setList(ArrayList<Other> list) {
         this.list = list;
     }
 

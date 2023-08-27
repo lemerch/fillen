@@ -27,12 +27,15 @@
  */
 package com.github.shakal76.fillen;
 
-import com.github.shakal76.fillen.enums.Priority;
 import com.github.shakal76.fillen.exception.BadLootException;
-import com.github.shakal76.fillen.exception.IgnoreFieldNotFoundException;
-import com.github.shakal76.fillen.exception.SetFieldNotFoundException;
+import com.github.shakal76.fillen.exception.service.logical.IgnoreFieldNotFoundException;
+import com.github.shakal76.fillen.exception.service.logical.SetFieldNotFoundException;
+import com.github.shakal76.fillen.exception.service.specialized.HeartException;
+import com.github.shakal76.fillen.exception.user.GenericException;
+import com.github.shakal76.fillen.exception.user.UserDietException;
 import com.github.shakal76.fillen.utils.FillenList;
 import com.github.shakal76.fillen.utils.Generic;
+import com.github.shakal76.fillen.utils.Ingredients;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -60,9 +63,6 @@ import java.lang.reflect.InvocationTargetException;
  *     </ul>
  * </p>
  */
-// TODO: add exception to setField
-// TODO: add info about setters into readme and javadoc here
-// TODO: create more effective method to get Setter name from Fieldname
 class Heart {
 
 
@@ -76,66 +76,70 @@ class Heart {
      */
     public static<T> T dinner(Class<T> type, Context context) throws BadLootException {
 
-
-        T invoked;
-        try {
-            invoked = type.getConstructor().newInstance();
-        }catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
-            throw new BadLootException("I cant find default constructor in `" + type.getName() + "`\n" + e.getMessage());
-        }
-
+        T invoked = create(type);
 
         for (Field field : type.getDeclaredFields()) {
-            String setterName = "set" + field.getName().toUpperCase().charAt(0) + field.getName().substring(1);
+            if (field.getType().isAssignableFrom(FillenList.class)) {
+                throw new HeartException("FillenList is service class, please use another container in your class :)");
+            }
+            String setterName = formatSetter(field.getName());
 
             if (context.settinglist.containsKey(field.getName())) {
-
                 context.settingCounter+=1;
-
-                try {
-                    type.getDeclaredMethod(setterName, field.getType()).invoke(invoked, context.settinglist.get(field.getName()));
-                }catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-                    throw new BadLootException("I cant set value into through the setter of field `" + field.getName() +
-                            "` in class " + type + "\n" + e.getMessage());
-                }
+                set(type, setterName, field, invoked, context.settinglist.get(field.getName()));
             }else if (! context.ignoringlist.contains(field.getName())) {
-
-                try {
-                    Object result = null;
-
-                    Ingredients ingredients = new Ingredients(
-                            field.getType(), field.getName(),
-                            new Generic(field.getGenericType()),
-                            field.getDeclaredAnnotations(),
-                            field.getModifiers()
-                    );
-                    for (Fillen.Diet diet : context.bag.get()) {
-                        Object timed = diet.menu(ingredients);
-                        if (timed != null) {
-                            if (timed.getClass().isAssignableFrom(FillenList.class)) {
-                                result = diet.fillenListHandler((FillenList) timed);
-                            }else {
-                                result = timed;
-                            }
-                            if (diet.getPriority().equals(Priority.HIGH)) break;
-                        }
-                    }
-                    type.getDeclaredMethod(setterName, field.getType()).invoke(invoked, result);
-                }catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-                    throw new BadLootException("I cant set value through the setter of field `" + field.getName() +
-                            "` in class " + type + "\n" + e.getMessage());
-                }catch (IllegalArgumentException e) {
-                    throw new BadLootException("Incorrect type of result in field `" + field.getName() +
-                            "` in class " + type + "\n" + e.getMessage());
-                }
+                Object result = handle(field, context.bag);
+                set(type, setterName, field, invoked, result);
             }else {
                 context.ignoreCounter+=1;
             }
         }
         return invoked;
     }
+    private static<T> T create(Class<T> type) throws HeartException {
+        try {
+            return type.getConstructor().newInstance();
+        }catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
+            throw new HeartException("I cant find default constructor in class `" + type.getName() + "`", e);
+        }
+    }
+    private static Object handle(Field field, Bag bag) throws UserDietException {
+        Object result = null;
 
-    public static void restChecker(Class<?> type, Context context) throws BadLootException {
+        Ingredients ingredients = new Ingredients(
+                field.getType(), field.getName(),
+                new Generic(field.getGenericType()),
+                field.getDeclaredAnnotations(),
+                field.getModifiers()
+        );
+        for (Fillen.Diet diet : bag.get()) {
+            Object timed = diet.menu(ingredients);
+            if (timed != null) {
+                result = timed;
+            }
+        }
+        if (result != null && result.getClass().isAssignableFrom(FillenList.class)) {
+            result = ((FillenList) result).getList().get(0);
+        }
+        return result;
+    }
+    private static void set(Class<?> type, String setterName, Field field, Object invoked, Object result) throws HeartException {
+        try {
+            type.getDeclaredMethod(setterName, field.getType()).invoke(invoked, result);
+        }catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            throw new HeartException("I cant set value through the setter of field `" + field.getName() +
+                    "` in class `" + type + "`", e);
+        }catch (IllegalArgumentException e) {
+            throw new HeartException("Incorrect type of result in field `" + field.getName() +
+                    "` in class `" + type + "`", e);
+        }
+    }
+
+    private static String formatSetter(String fieldName) {
+        return "set" + String.valueOf(fieldName.charAt(0)).toUpperCase() + fieldName.substring(1);
+    }
+
+    public static void restedChecker(Class<?> type, Context context) throws BadLootException {
         // SettingCheck
         if (context.settingCounter != context.settinglist.size()) {
             for (String name : context.settinglist.keySet()) {
@@ -165,4 +169,6 @@ class Heart {
             }
         }
     }
+
+
 }

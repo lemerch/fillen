@@ -28,11 +28,13 @@
 package com.github.shakal76.fillen.utils;
 
 import com.github.shakal76.fillen.exception.BadLootException;
+import com.github.shakal76.fillen.exception.service.specialized.HeartException;
+import com.github.shakal76.fillen.exception.user.GenericException;
+import com.github.shakal76.fillen.exception.user.UserDietException;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 
 
 /**
@@ -45,7 +47,7 @@ import java.util.ListIterator;
  */
 public class Generic {
     private List<Class<?>> generics;
-    public Generic(Type type) throws BadLootException {
+    public Generic(Type type) throws GenericException {
         String all = type.getTypeName();
         this.generics = new ArrayList<>();
         String[] splitted = all.split("<");
@@ -54,10 +56,21 @@ public class Generic {
             try {
                 this.generics.add(Class.forName(className));
             }catch (ClassNotFoundException e) {
-                throw new BadLootException("I cant find this class: " + className + "\n" + e.getMessage());
+                throw new GenericException("I cant find this class: " + className + "\n" + e.getMessage());
             }
         }
     }
+    private Generic(List<Class<?>> list) {
+        this.generics = list;
+    }
     public List<Class<?>> get() { return this.generics; }
-    public ListIterator iterator() { return this.generics.listIterator(); }
+    public Generic next() throws GenericException {
+        if (this.generics.size() >= 1) {
+            List<Class<?>> newlist = new ArrayList<>(this.generics.size());
+            for (int i = 1; i < this.generics.size(); i++) newlist.add(this.generics.get(i));
+            return new Generic(newlist);
+        }else {
+            throw new GenericException("generic next iteration cannot be processed because it last iteration");
+        }
+    }
 }

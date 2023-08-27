@@ -35,7 +35,14 @@ package com.github.shakal76.fillen.exception;
  * I'm sure you will swear at him more than once :)</p>
  */
 public class BadLootException extends Exception {
+    public BadLootException(String message, Exception e) {
+        super(message, e);
+    }
     public BadLootException(String message) {
         super(message);
     }
+    public BadLootException(Exception e) {
+        super(e);
+    }
+
 }

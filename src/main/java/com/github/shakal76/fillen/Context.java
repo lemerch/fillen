@@ -42,12 +42,25 @@ import java.util.Map;
  *  </ul>
  * </p>
  */
-public class Context {
+class Context {
     public List<String> ignoringlist = new ArrayList<>();
     public Map<String, Object> settinglist = new HashMap<>();
     public Bag bag = new Bag();
 
     public int settingCounter = 0;
     public int ignoreCounter = 0;
+
+    public boolean debug = false;
+
+    public Context clone() {
+        Context ctx = new Context();
+        ctx.bag = this.bag.clone();
+        ctx.settinglist = new HashMap<>(this.settinglist);
+        ctx.ignoringlist = new ArrayList<>(this.ignoringlist);
+
+        ctx.settingCounter = this.settingCounter;
+        ctx.ignoreCounter = this.ignoreCounter;
+        return ctx;
+    }
 
 }

@@ -1,4 +1,4 @@
-package com.github.shakal76.fillen.pojo;
+package com.github.shakal76.fillen.examples.pojo;
 
 public class Other {
     private int a;
@@ -30,8 +30,4 @@ public class Other {
         this.c = c;
     }
 
-    @Override
-    public String toString() {
-        return "c: " + c;
-    }
 }

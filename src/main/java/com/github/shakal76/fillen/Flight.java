@@ -28,6 +28,7 @@
 package com.github.shakal76.fillen;
 
 import com.github.shakal76.fillen.exception.BadLootException;
+import com.github.shakal76.fillen.exception.service.logical.SetOrIgnoreConflictException;
 
 /**
  * <h3>Flight class is the part of API - {@link Fillen}</h3>
@@ -48,28 +49,36 @@ import com.github.shakal76.fillen.exception.BadLootException;
  *  Fillen instance with its custom {@link Fillen.Diet} handlers
  * </p>
  */
-class Flight {
+public class Flight {
     private final Context context;
 
     Flight(Context context) {
         this.context = context;
     }
-    public Flight ignoreFields(String... fieldNames) {
+    public Flight ignore(String... fieldNames) {
         for (String field : fieldNames) {
             this.context.ignoringlist.add(field);
         }
         return this;
     }
-    public<T> Flight setField(String fieldName, T value) {
+    public<T> Flight set(String fieldName, T value) {
         this.context.settinglist.put(fieldName, value);
         return this;
     }
     public<T> T dinner(Class<T> type) throws BadLootException {
-        for (Fillen.Diet diet : this.context.bag.get()) {
+        for (String s : context.ignoringlist) {
+            if (context.settinglist.containsKey(s)) {
+                throw new SetOrIgnoreConflictException("ignore field `" + s + "` equals set value");
+            }
+        }
+        Context ctx = this.context.clone();
+        for (Fillen.Diet diet : context.bag.get()) {
             diet.context = this.context;
         }
-        T obj = Heart.dinner(type, this.context);
-        Heart.restChecker(type, this.context);
+        T obj = Heart.dinner(type, ctx);
+        Heart.restedChecker(type, ctx);
+        ctx = null;
         return obj;
     }
+
 }
