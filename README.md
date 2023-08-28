@@ -25,7 +25,6 @@ Individual application examples can be viewed in the [tests](/src/test/java/com/
 ```
 
 ## Licese
-
 Apache License Version 2.0
 
 
