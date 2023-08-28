@@ -25,24 +25,24 @@
  *  ⠠⠤⣉⣁⣢⣄⣀⣀⣤⣿⠷⠦⠤⣠⡶⠿⣟⠀⠀⠀⠀⠻⡀⠀
  * ⠀⠀⠔⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠃⠃⠉⠉⠛⠛⠿⢷⡶⠀
  */
-package com.github.shakal76.fillen.exception;
+package com.github.shakal76.fillen.exception.user;
+
+import com.github.shakal76.fillen.exception.BadLootException;
 
 /**
  * <p>
- *     This is the simplest exception to handle many other common exceptions that occur along the way, mainly com.github.shakal76.fillen.Heart
+ *     This is also a very simple type of exception that is needed to more easily identify user errors,
+ *     mainly in {@link com.github.shakal76.fillen.Fillen.Diet}.
  * </p>
- * <p>By the way, rate the name of this exception.
- * I'm sure you will swear at him more than once :)</p>
  */
-public class BadLootException extends Exception {
-    public BadLootException(String message, Exception e) {
+public class UserDietException extends BadLootException {
+    public UserDietException(String message, Exception e) {
         super(message, e);
     }
-    public BadLootException(String message) {
+    public UserDietException(String message) {
         super(message);
     }
-    public BadLootException(Exception e) {
+    public UserDietException(Exception e) {
         super(e);
     }
-
 }

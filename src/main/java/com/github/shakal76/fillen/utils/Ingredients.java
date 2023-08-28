@@ -25,9 +25,9 @@
  *  ⠠⠤⣉⣁⣢⣄⣀⣀⣤⣿⠷⠦⠤⣠⡶⠿⣟⠀⠀⠀⠀⠻⡀⠀
  * ⠀⠀⠔⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠃⠃⠉⠉⠛⠛⠿⢷⡶⠀
  */
-package com.github.shakal76.fillen;
+package com.github.shakal76.fillen.utils;
 
-import com.github.shakal76.fillen.utils.Generic;
+import com.github.shakal76.fillen.Fillen;
 
 import java.lang.annotation.Annotation;
 
@@ -50,7 +50,7 @@ import java.lang.annotation.Annotation;
  *     since each setter creates a new object - this is done for the convenience and security of user handlers in {@link Fillen.Diet}
  * </p>
  */
-public class Ingredients {
+public final class Ingredients {
     public final Class<?> type;
     public final String name;
     public final Generic generic;

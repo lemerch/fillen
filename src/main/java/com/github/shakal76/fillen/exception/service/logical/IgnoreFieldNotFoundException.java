@@ -25,16 +25,12 @@
  *  ⠠⠤⣉⣁⣢⣄⣀⣀⣤⣿⠷⠦⠤⣠⡶⠿⣟⠀⠀⠀⠀⠻⡀⠀
  * ⠀⠀⠔⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠃⠃⠉⠉⠛⠛⠿⢷⡶⠀
  */
-package com.github.shakal76.fillen.exception;
+package com.github.shakal76.fillen.exception.service.logical;
 
-/**
- * <p>
- *     This is also a very simple type of exception that is needed to more easily identify user errors,
- *     mainly in {@link com.github.shakal76.fillen.Fillen.Diet}.
- * </p>
- */
-public class UserDietException extends BadLootException {
-    public UserDietException(String message) {
+import com.github.shakal76.fillen.exception.BadLootException;
+
+public class IgnoreFieldNotFoundException extends BadLootException {
+    public IgnoreFieldNotFoundException(String message) {
         super(message);
     }
 }

@@ -27,9 +27,10 @@
  */
 package com.github.shakal76.fillen;
 
-import com.github.shakal76.fillen.enums.Priority;
 import com.github.shakal76.fillen.exception.BadLootException;
-import com.github.shakal76.fillen.exception.UserDietException;
+import com.github.shakal76.fillen.exception.user.DietAlreadyExistException;
+import com.github.shakal76.fillen.exception.user.UserDietException;
+import com.github.shakal76.fillen.utils.Ingredients;
 
 import java.util.*;
 
@@ -43,15 +44,14 @@ import java.util.*;
  * it will return your filling and prepared object. You can also manipulate
  * with fillen behaviour. Just example you have such methods as:
  *  <ul>
- *      <li><blockquote>{@code ingoreFields(String... fields)}</blockquote></li>
- *      <li><blockquote>{@code setField(String name, Object value)}</blockquote></li>
+ *      <li>{@link Fillen#ignore(String...)}</li>
+ *      <li>{@link Fillen#set(String, Object)}</li>
  *  </ul>
  *
  *  And of course you have such instrument as:
- *  <blockquote><pre>{@code abstract static class Fillen.Diet; }</pre></blockquote>
+ *  {@link Fillen.Diet}
  *
  *  With it, you can process your new types or redefine the logic of filling in existing ones.
- *  For more information, see {@link Fillen.Diet}
  * </p>
  *
  * <p></p>
@@ -61,56 +61,106 @@ import java.util.*;
  *  <ul>
  *      <li>CONFIGURE - this block is a group of constructors that accept
  *      {@link Bag}
- *      or it component {@link Fillen.Diet}</li>
+ *      or it component {@link Diet}</li>
  *
  *      <li>INTERMEDIATE HANDLERS - this block consists of 2 methods:
- *          <blockquote><pre>{@code ingoreFields(String... fields)}</pre></blockquote>
- *          <blockquote><pre>{@code setField(String name, Object value)}</pre></blockquote>
+ *          {@link Fillen#ignore(String...)}
+ *          {@link Fillen#set(String, Object)}
  *          for additional configuration
  *      and returns {@link Flight}</li>
  *
  *      <li>PERFERMER - this is the most important block, it is he who acts as a service in this application.
- *      BUT. before calling {@code Heart.dinner(...))} he should provide everyone with a {@code Fillen.Diet} in {@code context.bag} this very context</li>
+ *      BUT. before calling {@link Heart#dinner(Class, Context)} he should provide everyone {@link Fillen.Diet} clone of {@link Fillen#context}.
+ *      After processing dinner clone of context will be set to null</li>
  *
- *      <li>UTILS - it consists of one {@code abstract static class Fillen.Diet; }, but despite this, it is no less important especially for users
- *      For more information about this class read here {@link Fillen.Diet}</li>
+ *      <li>UTILS - it consists of one {@link Fillen.Diet}, but despite this, it is no less important especially for users</li>
  *  </ul>
  * </p>
  */
-// TODO: increase library security through encapsulation
-public class Fillen {
+public final class Fillen {
+    /**
+     * This is a simple constant that setting in constructor at once
+     * See more about this type here - {@link Context}
+     */
     private final Context context = new Context();
 
     // CONFIGURE
-    public Fillen() {}
     public Fillen(Bag bag) {
         this.context.bag = bag;
     }
-    public Fillen(Fillen.Diet... diets) {
+    public Fillen(Diet... diets) throws DietAlreadyExistException {
         for (Diet diet : diets) {
-            this.context.bag.put(diet);
+            this.context.bag.add(diet);
         }
     }
 
 
     // INTERMEDIATE HANDLERS
-    public Flight ignoreFields(String... fieldNames) {
-        Flight flight = new Flight(this.context);
-        return flight.ignoreFields(fieldNames);
+
+    /**
+     * This method create new instance of {@link Flight} class, his constructor has default modifier.
+     * This is necessary because this class cannot be NOT part of {@link Fillen}.
+     *
+     * We pass the context to its constructor and call the {@link Flight#ignore} method of {@link Flight},
+     * which will return itself.
+     *
+     * What is important is that we pass it exactly the cloned {@link Fillen#context}, so that when creating multiple {@link Flight},
+     * they do not refer to the same context.
+     *
+     * @param fieldNames
+     * @return {@link Flight}
+     */
+    public Flight ignore(String... fieldNames) {
+        Flight flight = new Flight(this.context.clone());
+        return flight.ignore(fieldNames);
     }
-    public<T> Flight setField(String fieldName, T value) {
-        Flight flight = new Flight(this.context);
-        return flight.setField(fieldName, value);
+
+    /**
+     * This method create new instance of {@link Flight} class, his constructor has default modifier.
+     * This is necessary because this class cannot be NOT part of {@link Fillen}.
+     *
+     * We pass the context to its constructor and call the {@link Flight#set(String, Object)} method of {@link Flight},
+     * which will return itself.
+     *
+     * What is important is that we pass it exactly the cloned {@link Fillen#context}, so that when creating multiple {@link Flight},
+     * they do not refer to the same context.
+     *
+     * @param fieldName
+     * @param value
+     * @return {@link Flight}
+     * @param <T>
+     */
+    public<T> Flight set(String fieldName, T value) {
+        Flight flight = new Flight(this.context.clone());
+        return flight.set(fieldName, value);
     }
 
     // PERFERMER
 
-
+    /**
+     * This is probably the most important method for our api.
+     * It clones the context for Diets and Heart.
+     *
+     * This is necessary so that each call to this method works with
+     * its own instance of the context and does not change each other's values,
+     * for example, if they were run in parallel.
+     *
+     * At the end of his work, he just cleans it up and returns the finished object.
+     *
+     * @param type
+     * @return prepared Object
+     * @param <T>
+     * @throws BadLootException
+     */
     public<T> T dinner(Class<T> type) throws BadLootException {
-        for (Fillen.Diet diet : this.context.bag.get()) {
+        Context ctx = this.context.clone();
+        for (Fillen.Diet diet : context.bag.get()) {
             diet.context = this.context;
         }
-        return Heart.dinner(type, this.context);
+        T obj = Heart.dinner(type, ctx);
+        Heart.restedChecker(type, ctx);
+        ctx = null;
+        return obj;
     }
 
     // UTILS
@@ -119,15 +169,9 @@ public class Fillen {
      * <h3>Fillen.Diet abstract class is instrument for users type controll</h3>
      * <p>You can realize this class and put it into {@link Fillen} constructor
      *  Even if you process already processed types, your types will still override them.
-     *  BUT! If you need a 100% guarantee that it is your type processing logic that will work with fields of the corresponding type,
-     *  then increase its priority to HIGH via <blockquote><pre>{@code Fillen.Diet().setPriority(Priority.HIGH);}</pre></blockquote>
      * </p>
      *
-     * <p>For an example, you can see it <a href="https://github.com/shakal76/fillen/blob/main/src/test/java/com/github/shakal76/fillen/ExampleTest.java">here</a>
-     *
-     * <p></p>
-     * <h3>IMPORTANT</h3>
-     * <p>When you put your menus in a bag at Priority.LOW of each of them - priority in conflicts will be given to the last non-null</p>
+     * <p>For an example, you can see it <a href="https://github.com/shakal76/fillen/blob/main/src/test/java/com/github/shakal76/fillen/examples">here</a>
      *
      * <p></p>
      *
@@ -135,35 +179,15 @@ public class Fillen {
      * <p>As in the case of {@link Fillen}, I have divided this class into several semantic block, such as:</p>
      *
      * <ul>
-     *      <li>CONFIGURE - this block is a simple private field of {@link Priority} type and its setter with getter.
-     *      Pay attention to the setter, it returns its own object, so you can assign priority to it immediately after creating the menu</li>
-     *
      *      <li>BUILT-IN METHODS - this is an entertaining block that will make it easier for you to work with reflection.
      *      It contains several small but very important methods that you can use only when implementing this class.
      *      There are such methods as:
      *          <ul>
-     *              <li>callback - this method will allow you to return to the previous {@code Fillen.diet.menu(...)}
-     *              for processing nested classes (currently used in {@link com.github.shakal76.fillen.base.BaseDiet}
-     *              for structures such as List and primitive arrays)
-     *
-     *              <p></p>
-     *              <h4>WARNING</h4>
-     *              this method should be used quite carefully because it can cause recursion and then StackOverflowException</li>
-     *              <p></p>
-     *
-     *              <li>dinner - this method will allow you to call {@link Heart}.dinner while passing you the current context.
-     *              This method is very useful if you have a field that is also a class that needs to be filled in.</li>
-     *
-     *              <p></p>
-     *
-     *              <li>getListArray - a very useful method for determining the behavior of filling arrays.
-     *              It returns a list of array types of different nesting that must be created with multidimensional arrays.
-     *              You can see an example of use in {@link com.github.shakal76.fillen.base.BaseDiet}</li>
-     *
-     *              <p></p>
-     *
-     *              <li>isTypesEquals - the simplest possible method that checks whether the data types match
-     *              it is made for easier reading of custom Fillen.Diet.menu</li>
+     *              <li>{@link Fillen.Diet#seeback(Ingredients)}</li>
+     *              <li>{@link Fillen.Diet#dinner(Class)}</li>
+     *              <li>{@link Fillen.Diet#connector(Ingredients, Diet...)}</li>
+     *              <li>{@link Fillen.Diet#isTypesEquals(Class, Class)}</li>
+     *              <li>{@link Fillen.Diet#getAllInterfaces(Class)}</li>
      *           </ul>
      *      </li>
      *
@@ -171,67 +195,128 @@ public class Fillen {
      *      The same non-implemented abstract method that I hope you will be able to implement easily :)</li>
      * </ul>
      */
-    public abstract static class Diet {
+    public static abstract class Diet {
         Context context;
 
-        // CONFIGURE
-        private Priority priority = Priority.LOW;
-
-        public Priority getPriority() {
-            return priority;
-        }
-        public Diet setPriority(Priority priority) {
-            this.priority = priority;
-            return this;
-        }
 
         // BUILT-IN METHODS
 
-        // BE CAREFULLY WITH IT BECAUSE OF RECURSION
-        protected Object callback(Ingredients ingredients) throws UserDietException {
-            if (context == null) {
-                throw new UserDietException("haven't context");
-            }
+        /**
+         * This method is needed to link several diets with their menus.
+         * I recommend using it to create an api for your diets.
+         *
+         * You can see an example of this <a href="https://github.com/shakal76/fillen/blob/main/src/main/java/com/github/shakal76/fillen/basic/api.java">here</a>
+         *
+         * @param ingredients
+         * @param diets
+         * @return result of diets
+         * @throws UserDietException
+         */
+        protected Object connector(Ingredients ingredients, Diet... diets) throws UserDietException {
             Object result = null;
-            for (Fillen.Diet diet : context.bag.get()) {
+            for (Diet diet : diets) {
+                diet.context = context;
                 Object timed = diet.menu(ingredients);
                 if (timed != null) {
                     result = timed;
-                    if (diet.getPriority().equals(Priority.HIGH)) break;
                 }
             }
             return result;
         }
-        protected Object dinner(Class<?> type) throws UserDietException {
-            if (context == null) {
-                throw new UserDietException("haven't context");
+
+        /**
+         * <h3>Warrning - may lead to infinite recursion</h3>
+         *
+         * This method calls all diets from a local context.
+         * This method is suitable for recursive work with the type.
+         *
+         * At the moment it is used for processing lists, arrays and other containers.
+         *
+         * @param ingredients
+         * @return result of diets
+         * @throws UserDietException
+         */
+        protected Object seeback(Ingredients ingredients) throws UserDietException {
+            Object result = null;
+            for (Diet diet : context.bag.get()) {
+                Object timed = diet.menu(ingredients);
+                if (timed != null) {
+                    result = timed;
+                }
             }
+            return result;
+        }
+
+        /**
+         * This method is needed to process classes whose fields need to be filled in according
+         * to the CURRENT (the one in which your diet is currently working) diet context
+         * (that is, all `ignore` and `set` will be taken into account)
+         *
+         * @param type
+         * @return filled Object
+         * @throws BadLootException
+         */
+        protected Object dinner(Class<?> type) throws UserDietException {
             try {
-                return Heart.dinner(type, context);
+                return Heart.dinner(type, this.context);
             }catch (BadLootException e) {
-                throw new UserDietException(e.getMessage());
+                throw new UserDietException(e);
             }
         }
+
+        /**
+         * This method simply compares the classes to match.
+         *
+         * @param one
+         * @param two
+         * @return true or false
+         */
         protected Boolean isTypesEquals(Class<?> one, Class<?> two) {
+            if (one == null ||  two == null) return false;
             return two.isAssignableFrom(one);
         }
-        protected List<Class<?>> getListArray(Class<?> arr) {
-            List<Class<?>> array = new ArrayList<>();
-            if (arr.isArray()) {
-                Class<?> currentType = arr.getComponentType();
-                while (currentType.isArray()) {
-                    array.add(currentType);
-                    currentType = currentType.getComponentType();
+
+        /**
+         * This method is needed if you need to collect all the interfaces of your class,
+         * including all the interfaces of parents, etc.
+         *
+         * @param clazz
+         * @return list of interfaces
+         */
+        protected List<Class<?>> getAllInterfaces(Class<?> clazz) {
+            if (clazz == null) {
+                return new ArrayList<>();
+            }
+            List<Class<?>> interfacesFound = new ArrayList<>();
+            getAllInterfaces(clazz, interfacesFound);
+            return interfacesFound;
+        }
+
+        private void getAllInterfaces(Class<?> clazz,
+                                             List<Class<?>> interfacesFound) {
+            while (clazz != null) {
+                Class<?>[] interfaces = clazz.getInterfaces();
+
+                for (int i = 0; i < interfaces.length; i++) {
+                    if (!interfacesFound.contains(interfaces[i])) {
+                        interfacesFound.add(interfaces[i]);
+                        getAllInterfaces(interfaces[i], interfacesFound);
+                    }
                 }
-                array.add(currentType);
-                return array;
-            }else {
-                return null;
+                clazz = clazz.getSuperclass();
             }
         }
 
         // TARGET
-        public abstract Object menu(Ingredients ingredients) throws UserDietException;
+
+        /**
+         * This method returns the result of determining the type, in extreme cases it will return null if it does not determine the type
+         *
+         * @param ingredients {@link Ingredients}
+         * @return null / prepared value from ingredients
+         * @throws UserDietException
+         */
+        abstract public Object menu(Ingredients ingredients) throws UserDietException;
 
     }
 

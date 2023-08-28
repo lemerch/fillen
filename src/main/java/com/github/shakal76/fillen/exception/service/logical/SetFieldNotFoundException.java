@@ -25,12 +25,12 @@
  *  ⠠⠤⣉⣁⣢⣄⣀⣀⣤⣿⠷⠦⠤⣠⡶⠿⣟⠀⠀⠀⠀⠻⡀⠀
  * ⠀⠀⠔⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠃⠃⠉⠉⠛⠛⠿⢷⡶⠀
  */
-package com.github.shakal76.fillen.enums;
+package com.github.shakal76.fillen.exception.service.logical;
 
-/**
- * <p>This is the simplest enum to determine the priority of a custom type handler - {@link com.github.shakal76.fillen.Fillen.Diet}</p>
- */
-public enum Priority {
-    LOW,
-    HIGH
+import com.github.shakal76.fillen.exception.BadLootException;
+
+public class SetFieldNotFoundException extends BadLootException {
+    public SetFieldNotFoundException(String message) {
+        super(message);
+    }
 }

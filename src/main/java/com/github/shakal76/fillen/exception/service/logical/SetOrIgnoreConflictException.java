@@ -25,24 +25,12 @@
  *  ⠠⠤⣉⣁⣢⣄⣀⣀⣤⣿⠷⠦⠤⣠⡶⠿⣟⠀⠀⠀⠀⠻⡀⠀
  * ⠀⠀⠔⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠃⠃⠉⠉⠛⠛⠿⢷⡶⠀
  */
-package com.github.shakal76.fillen.exception;
+package com.github.shakal76.fillen.exception.service.logical;
 
-/**
- * <p>
- *     This is the simplest exception to handle many other common exceptions that occur along the way, mainly com.github.shakal76.fillen.Heart
- * </p>
- * <p>By the way, rate the name of this exception.
- * I'm sure you will swear at him more than once :)</p>
- */
-public class BadLootException extends Exception {
-    public BadLootException(String message, Exception e) {
-        super(message, e);
-    }
-    public BadLootException(String message) {
+import com.github.shakal76.fillen.exception.BadLootException;
+
+public class SetOrIgnoreConflictException extends BadLootException {
+    public SetOrIgnoreConflictException(String message) {
         super(message);
     }
-    public BadLootException(Exception e) {
-        super(e);
-    }
-
 }
