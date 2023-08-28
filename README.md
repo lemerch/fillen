@@ -13,7 +13,7 @@ The name Fillen is a play on the words Filler and Filin, it would be possible to
 
 Why do I need this library? The original purpose of this bible library was to fill in the fields of sufficiently complex classes for testing them at work, but now I can confidently say that these goals can be greatly expanded. For example, you can use this library for more convenient, simple and structured processing of classes and their fields, you can check fields for annotations, data types, access modifiers, generalized types, etc. This will probably allow you to create your own tools, which I am sure will help no generation of programmers yet ;)
 
-Individual application examples can be viewed in the [tests](/src/test/java/com/github/shakal76/fillen/examples)
+Individual application examples can be viewed in the [tests](/src/test/java/com/github/shakal76/fillen/examples/Example.java)
 
 ## Build
 ```xml
@@ -27,10 +27,6 @@ Individual application examples can be viewed in the [tests](/src/test/java/com/
 ## Licese
 
 Apache License Version 2.0
-
-## Examples
-
-[here](/src/main/test/com/github/shakal76/fillen/examples)
 
 
 # How it works?
