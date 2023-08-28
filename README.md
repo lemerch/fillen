@@ -177,7 +177,8 @@ Sometimes in life we need to think. Often we like to complicate a lot for no app
 In many cases, we can simplify our lives if we use one small but very useful method - `fillen.set(String fieldName, Object value)`
 
 ```java
-fillen.set("myFieldName", 123456);
+MyClass my = fillen.set("myFieldName", 123)
+                       .dinner(MyClass.class);
         ...
 ```
 
