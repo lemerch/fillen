@@ -17,54 +17,24 @@ Individual application examples can be viewed in the [tests](/src/test/java/com/
 
 ## Build
 
-Create ~./m2/settings.xml or C:\Users\%UserName%\.m2\settings.xml - and write:
-
 ```xml
-<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
-                      http://maven.apache.org/xsd/settings-1.0.0.xsd">
+<repositories>
+          <repository>
+              <id>jitpack.io</id>
+              <url>https://jitpack.io</url>
+          </repository>
+</repositories>
 
-    <activeProfiles>
-        <activeProfile>github</activeProfile>
-    </activeProfiles>
-
-    <profiles>
-        <profile>
-            <id>github</id>
-            <repositories>
-                <repository>
-                    <id>central</id>
-                    <url>https://repo1.maven.org/maven2</url>
-                </repository>
-                <repository>
-                    <id>github</id>
-                    <url>https://maven.pkg.github.com/shakal76/fillen</url>
-                    <snapshots>
-                        <enabled>true</enabled>
-                    </snapshots>
-                </repository>
-            </repositories>
-        </profile>
-    </profiles>
-
-  <servers>
-    <server>
-      <id>github</id>
-      <username>USERNAME</username>
-      <password>CLASSICAL-TOKEN-WITH-WRITE/READ-PACKAGES</password>
-    </server>
-  </servers>
-</settings>
+<dependencies>
+    <dependency>
+          <groupId>com.github.shakal76</groupId>
+          <artifactId>fillen</artifactId>
+          <version>v1.0</version>
+    </dependency>
+<dependencies>
 ```
 
-```xml
-<dependency>
-    <groupId>com.github.shakal76.fillen</groupId>
-    <artifactId>fillen-snatcher</artifactId>
-    <version>1.0</version>
-</dependency>
-```
+You can also build it through GitHub Package, [see](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#installing-a-package)
 
 ## Licese
 Apache License Version 2.0
