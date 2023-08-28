@@ -198,7 +198,13 @@ _______________
 <img alt="fourth" height="50" src="static/8.png" width="50" style="display: inline;"/>
 But time goes by, days pass and one day we will have to leave. No matter how difficult it is to accept, but our filin ends up in the `Converter` class.
 
-**not implemented yet**
+```java
+new Converter().bind("a", "b")
+        .fromto(myObject, Example.class);
+
+```
+
+**NOT IMPLEMENTED YET**
 
 _______________
 
