@@ -1,4 +1,4 @@
-package com.github.shakal76.fillen.common.pojo;
+package com.github.shakal76.fillen.common.beans;
 
 public class NoDefaultConstructor {
 

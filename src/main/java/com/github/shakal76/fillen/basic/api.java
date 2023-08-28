@@ -56,6 +56,8 @@ public final class api {
      *      <li>long</li>
      *      <li>float</li>
      *      <li>double</li>
+     *      <li>char</li>
+     *      <li>boolean</li>
      *
      *      <li>List</li>
      *      <li>Set</li>

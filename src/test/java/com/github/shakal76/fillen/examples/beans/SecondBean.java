@@ -1,6 +1,6 @@
-package com.github.shakal76.fillen.examples.pojo;
+package com.github.shakal76.fillen.examples.beans;
 
-public class Other {
+public class SecondBean {
     private int a;
     private int b;
     private double c;

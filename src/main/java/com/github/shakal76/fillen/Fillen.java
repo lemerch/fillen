@@ -44,7 +44,7 @@ import java.util.*;
  * it will return your filling and prepared object. You can also manipulate
  * with fillen behaviour. Just example you have such methods as:
  *  <ul>
- *      <li>{@link Fillen#ingore(String...)}</li>
+ *      <li>{@link Fillen#ignore(String...)}</li>
  *      <li>{@link Fillen#set(String, Object)}</li>
  *  </ul>
  *
@@ -64,7 +64,7 @@ import java.util.*;
  *      or it component {@link Diet}</li>
  *
  *      <li>INTERMEDIATE HANDLERS - this block consists of 2 methods:
- *          {@link Fillen#ingore(String...)}
+ *          {@link Fillen#ignore(String...)}
  *          {@link Fillen#set(String, Object)}
  *          for additional configuration
  *      and returns {@link Flight}</li>
@@ -110,7 +110,7 @@ public final class Fillen {
      * @param fieldNames
      * @return {@link Flight}
      */
-    public Flight ingore(String... fieldNames) {
+    public Flight ignore(String... fieldNames) {
         Flight flight = new Flight(this.context.clone());
         return flight.ignore(fieldNames);
     }
@@ -256,8 +256,12 @@ public final class Fillen {
          * @return filled Object
          * @throws BadLootException
          */
-        protected Object dinner(Class<?> type) throws BadLootException {
-            return Heart.dinner(type, this.context);
+        protected Object dinner(Class<?> type) throws UserDietException {
+            try {
+                return Heart.dinner(type, this.context);
+            }catch (BadLootException e) {
+                throw new UserDietException(e);
+            }
         }
 
         /**

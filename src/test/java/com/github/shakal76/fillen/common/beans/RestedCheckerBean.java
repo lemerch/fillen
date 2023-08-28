@@ -1,8 +1,8 @@
-package com.github.shakal76.fillen.common.pojo;
+package com.github.shakal76.fillen.common.beans;
 
 import java.math.BigDecimal;
 
-public class RestedCheckerPojo {
+public class RestedCheckerBean {
     private int a;
     private String b;
     private BigDecimal c;

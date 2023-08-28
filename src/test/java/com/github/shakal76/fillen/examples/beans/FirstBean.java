@@ -1,24 +1,22 @@
-package com.github.shakal76.fillen.examples.pojo;
-
-import com.github.shakal76.fillen.examples.pojo.Other;
+package com.github.shakal76.fillen.examples.beans;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
 
 /**
- * GETTERS AND SETTERS NOT REQUIRED
+ * FOR IGNORE - SETTER IS OPTIONAL
  */
-public class ExamplePojo {
+public class FirstBean {
 
-    private String[] text;
+    private String[][][][][] text;
     private Integer number;
 
-    private Queue<List<Other>> list;
+    private ArrayList<LinkedList<SecondBean>> list;
 
     private BigDecimal decimal;
 
-    ////////////////////////////////////////////
-    public String[] getText() {
+    public String[][][][][] getText() {
         return text;
     }
 
@@ -26,7 +24,7 @@ public class ExamplePojo {
         return number;
     }
 
-    public Queue<List<Other>> getList() {
+    public ArrayList<LinkedList<SecondBean>> getList() {
         return list;
     }
 
@@ -34,7 +32,7 @@ public class ExamplePojo {
         return decimal;
     }
 
-    public void setText(String[] text) {
+    public void setText(String[][][][][] text) {
         this.text = text;
     }
 
@@ -42,7 +40,7 @@ public class ExamplePojo {
         this.number = number;
     }
 
-    public void setList(Queue<List<Other>> list) {
+    public void setList(ArrayList<LinkedList<SecondBean>> list) {
         this.list = list;
     }
 

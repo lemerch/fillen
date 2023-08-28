@@ -34,7 +34,7 @@ import com.github.shakal76.fillen.exception.service.logical.SetOrIgnoreConflictE
  * <h3>Flight class is the part of API - {@link Fillen}</h3>
  *
  * <p>
- *  This class is not much different from Fillen,
+ *  This class is not much different from {@link Fillen},
  *  but it is through it that you can manipulate the methods:
  *  <ul>
  *      <li>{@link Flight#ignore(String...)}</li>

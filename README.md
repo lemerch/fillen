@@ -58,7 +58,7 @@ Fillen fillen = new Fillen(base);
 The filins is active mainly at night, in the first few hours after sunset and in the last few hours before sunrise.
 Noticing a potential victim, the predator rushes at her with a stone and plunges its claws into her, snatched and dinners her
 
-Unlike real filins, **ours** prefers different classes in java, which of course he will be able to see, otherwise he will either skip a piece of it (the class field) or ignore it (make it null).
+Unlike real filins, **ours** prefers different javabeans classes (default constructor, setters), which of course he will be able to see, otherwise he will either skip a piece of it (the class field) or ignore it (make it null).
 
 ```java
 import static com.github.shakal76.fillen.basic.api.base;
@@ -71,9 +71,6 @@ my.getSomeField();
 
 **NOTICE** - if the field of your class is an array, list or others... and its final type is ignored, then the array itself will be initialized, but its first element will be null.
 
-
-**Requirements for classes:** your class should have a default constructor, fields should have public setters.
-
 But why can Fillen not notice a 'piece of food'? - The thing is that he is limited by his diet)
 
 ### Heart
@@ -84,7 +81,7 @@ They eyes are very large and look straight ahead, according to the position of t
 Fillen also has a heart that you can't see, but which sees you, and, moreover, you can customize it for yourself.
 To do this, you just need to make a menu for our **filin**. Initially, the owl does not have any `diet`, but you can create it yourself or use the basic one.
 
-Basic diet support types: **string, byte, short, int, long, float, double** - that the value of which will be random. And **array, list, set, queue and any implementation of Collection interface**.
+Basic diet support types: **string, byte, short, int, long, float, double, boolean, char** - that the value of which will be random. And **array, list, set, queue and any implementation of Collection interface**.
 
 To diversify his `diet` and thus adjust his vision, you can use the `abstract class Fillen.Diet`, where there is only one method not implemented - `Object menu(Object)`, 
 where you can tell the Fillen how to process new data types. At the entrance, you will receive the ingredients class, which contains information about the field. To get the data type of the passed field, you can refer to it as `ingredients.type`. For the convenience of verification, you can use the built-in `isTypesEquals(one, two)` method. By implementing this class, you will get the corresponding object that should be placed in the `constructor` of our filin.
@@ -204,7 +201,7 @@ _______________
 
 <img alt="fourth" height="50" src="static/8.png" width="50" style="display: inline;"/>
 But time goes by, days pass and one day we will have to leave. No matter how difficult it is to accept, but our filin ends up in the `Converter` class.
-...
+**not implemented yet**
 
 _______________
 
@@ -301,8 +298,7 @@ Well, the last thing I want to say here is exception handling - you can manipula
 
 # TODO:
 
-- add converter
-- examples
 - add threading tests
+- add class converter?
 
 Filins color - #53F4CC

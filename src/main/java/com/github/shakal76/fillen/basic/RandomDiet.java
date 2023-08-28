@@ -53,6 +53,10 @@ public class RandomDiet extends Fillen.Diet {
             return 5 + (float)(Math.random() * ((10 - 5) + 1));
         }else if(isTypesEquals(ingredients.type, double.class) || isTypesEquals(ingredients.type, Double.class)) {
             return 5 + (Math.random() * ((10 - 5) + 1));
+        }else if(isTypesEquals(ingredients.type, boolean.class) || isTypesEquals(ingredients.type, Boolean.class)) {
+            return Math.random() < 0.5;
+        }else if(isTypesEquals(ingredients.type, char.class) || isTypesEquals(ingredients.type, Character.class)) {
+            return ((int) (Math.random() * 52) < 26) ? 'A' : 'a';
         }
         return null;
     }

@@ -1,6 +1,6 @@
-package com.github.shakal76.fillen.common.pojo;
+package com.github.shakal76.fillen.common.beans;
 
-public class IgnorePojo {
+public class IgnoreBean {
     private int a;
     private String b;
     private Double c;
@@ -13,6 +13,7 @@ public class IgnorePojo {
         this.a = a;
     }
 
+    // NO SETTER B
     public String getB() {
         return b;
     }
