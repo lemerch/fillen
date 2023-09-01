@@ -316,5 +316,9 @@ Well, the last thing I want to say here is exception handling - you can manipula
 
 - add threading tests
 - add class converter?
+- fix restedChecker
+- fix Bag comparablity for Diets
+- add to Bag method swap
+- add debug into Bag or Heart
 
 Filins color - #53F4CC
