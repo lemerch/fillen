@@ -28,7 +28,7 @@ Individual application examples can be viewed in the [tests](/src/test/java/com/
 
 <dependencies>
     <dependency>
-          <groupId>com.github.shakal76</groupId>
+          <groupId>com.github.lemerch</groupId>
           <artifactId>fillen</artifactId>
           <version>v1.0</version>
     </dependency>
