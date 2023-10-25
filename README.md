@@ -30,9 +30,9 @@ Individual application examples can be viewed in the [tests](/src/test/java/com/
     <dependency>
           <groupId>com.github.lemerch</groupId>
           <artifactId>fillen</artifactId>
-          <version>v1.0</version>
+          <version>1.1</version>
     </dependency>
-<dependencies>
+</dependencies>
 ```
 
 You can also build it through GitHub Package, [see](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#installing-a-package)
@@ -56,9 +56,9 @@ Yes, filins are exemplary family men)
 The path **our** filin begins with constructor that accept `diets`.
 
 ```java
-import static com.github.shakal76.fillen.basic.api.base;
 
-Fillen fillen = new Fillen(base);
+
+Fillen fillen=new Fillen(base);
 ```
 
 ### Meal
@@ -69,11 +69,11 @@ Noticing a potential victim, the predator rushes at her with a stone and plunges
 Unlike real filins, **ours** prefers different javabeans classes (default constructor, setters), which of course he will be able to see, otherwise he will either skip a piece of it (the class field) or ignore it (make it null).
 
 ```java
-import static com.github.shakal76.fillen.basic.api.base;
 
-Fillen fillen = new Fillen(base);
-MyClass my = fillen.dinner(MyClass.class);
-my.getSomeField();
+
+Fillen fillen=new Fillen(base);
+        MyClass my=fillen.dinner(MyClass.class);
+        my.getSomeField();
         ...
 ```
 
@@ -165,7 +165,7 @@ What should I do if I need to add processing of an internal type whose fields al
 <img alt="fourth" height="50" src="static/5.png" width="50" style="display: inline;"/>
 At the moment, only Set, Queue, List, Array and implementations of Collection (ArrayList, LinkedList...) are implemented. Their logic is simple, they create a container from as many measures as were specified and only add the value/values of the target type at the end. Yes, I didn't misspoke - values are also possible. You can pass a `FillenList` of values with normal handlers and they will be passed to the field, if the type was not a container, then only the first cell of your result will be passed, otherwise it will pass all the values.
 
-You can also create such logical handlers - you can see more information about this [here](/src/main/java/com/github/shakal76/fillen/basic/api.java)
+You can also create such logical handlers - you can see more information about this [here](/com/github/lemerch/fillen/basic/api.java)
 
 _______________
 

@@ -6,14 +6,44 @@
 
     <groupId>com.github.lemerch</groupId>
     <artifactId>fillen</artifactId>
-    <version>1.0</version>
+    <version>1.1</version>
+
+    <description>are you hungry? ᓀᵥᓂ</description>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Dmitry Terakov</name>
+            <email>toorkeor@gmail.com</email>
+        </developer>
+    </developers>
+
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
+
     <dependencies>
+        <dependency>
+            <groupId>com.github.lemerch</groupId>
+            <artifactId>montelo</artifactId>
+            <version>1.1</version>
+        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
